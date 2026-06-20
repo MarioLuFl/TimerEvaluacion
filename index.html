@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temporizador de Evaluación</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        h1 { margin-top: 0; color: #1a73e8; }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover { background-color: #1557b0; }
+        
+        /* Pantalla de proyeccion */
+        #display-screen { display: none; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            text-align: left;
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 5px solid #1a73e8;
+        }
+        .info-item span { font-weight: bold; color: #555; }
+        .timer {
+            font-size: 7em;
+            font-weight: bold;
+            color: #d32f2f;
+            margin: 20px 0;
+            font-variant-numeric: tabular-nums;
+        }
+        .time-up { color: #000; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="setup-screen">
+        <h1>Configuración de Evaluación</h1>
+        
+        <div class="form-group">
+            <label>Nombre del curso:</label>
+            <input type="text" id="course-name" value="Circuitos Lógicos Digitales">
+        </div>
+        <div class="form-group">
+            <label>Código del curso:</label>
+            <input type="text" id="course-code" value="MT123">
+        </div>
+        <div class="form-group">
+            <label>Nombre del profesor:</label>
+            <input type="text" id="prof-name" value="Msc. Mario Lupaca Flores">
+        </div>
+        <div class="form-group">
+            <label>Tipo de Temporizador:</label>
+            <select id="timer-type" onchange="toggleTimerInputs()">
+                <option value="countdown">Cuenta Regresiva (Minutos)</option>
+                <option value="endtime">Hora de Fin (Exacta)</option>
+            </select>
+        </div>
+        
+        <div class="form-group" id="div-duration">
+            <label>Duración (en minutos):</label>
+            <input type="number" id="duration-mins" value="60" min="1">
+        </div>
+        
+        <div class="form-group" id="div-endtime" style="display: none;">
+            <label>Hora de Fin:</label>
+            <input type="time" id="end-time-input">
+        </div>
+
+        <button onclick="startTimer()">Iniciar Evaluación</button>
+    </div>
+
+    <div class="container" id="display-screen">
+        <div class="info-grid">
+            <div class="info-item"><span>Curso:</span> <span id="disp-course" style="font-weight: normal;"></span></div>
+            <div class="info-item"><span>Código:</span> <span id="disp-code" style="font-weight: normal;"></span></div>
+            <div class="info-item"><span>Profesor:</span> <span id="disp-prof" style="font-weight: normal;"></span></div>
+            <div class="info-item"><span>Fecha:</span> <span id="disp-date" style="font-weight: normal;"></span></div>
+            <div class="info-item"><span>Hora Inicio:</span> <span id="disp-start" style="font-weight: normal;"></span></div>
+            <div class="info-item"><span>Hora Fin:</span> <span id="disp-end" style="font-weight: normal;"></span></div>
+        </div>
+
+        <div>TIEMPO RESTANTE</div>
+        <div class="timer" id="time-remaining">00:00:00</div>
+    </div>
+
+    <script>
+        let interval;
+
+        function toggleTimerInputs() {
+            const type = document.getElementById('timer-type').value;
+            if (type === 'countdown') {
+                document.getElementById('div-duration').style.display = 'block';
+                document.getElementById('div-endtime').style.display = 'none';
+            } else {
+                document.getElementById('div-duration').style.display = 'none';
+                document.getElementById('div-endtime').style.display = 'block';
+            }
+        }
+
+        function formatTimeStr(date) {
+            return date.getHours().toString().padStart(2, '0') + ':' + 
+                   date.getMinutes().toString().padStart(2, '0') + ':' + 
+                   date.getSeconds().toString().padStart(2, '0');
+        }
+
+        function startTimer() {
+            const now = new Date();
+            let endTime;
+
+            // Obtener el tipo de temporizador
+            const type = document.getElementById('timer-type').value;
+
+            if (type === 'countdown') {
+                const mins = parseInt(document.getElementById('duration-mins').value);
+                if (isNaN(mins) || mins <= 0) return alert('Ingrese una duración válida.');
+                endTime = new Date(now.getTime() + mins * 60000);
+            } else {
+                const timeStr = document.getElementById('end-time-input').value;
+                if (!timeStr) return alert('Ingrese una hora de fin.');
+                const [hours, minutes] = timeStr.split(':');
+                endTime = new Date(now);
+                endTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                
+                // Si la hora de fin ya pasó hoy, asume que es para el día siguiente (caso raro, pero posible)
+                if (endTime < now) endTime.setDate(endTime.getDate() + 1);
+            }
+
+            // Llenar los datos de la pantalla
+            document.getElementById('disp-course').innerText = document.getElementById('course-name').value;
+            document.getElementById('disp-code').innerText = document.getElementById('course-code').value;
+            document.getElementById('disp-prof').innerText = document.getElementById('prof-name').value;
+            
+            const day = now.getDate().toString().padStart(2, '0');
+            const month = (now.getMonth() + 1).toString().padStart(2, '0');
+            const year = now.getFullYear();
+            document.getElementById('disp-date').innerText = `${day}/${month}/${year}`;
+            
+            document.getElementById('disp-start').innerText = formatTimeStr(now);
+            document.getElementById('disp-end').innerText = formatTimeStr(endTime);
+
+            // Cambiar de pantalla
+            document.getElementById('setup-screen').style.display = 'none';
+            document.getElementById('display-screen').style.display = 'block';
+
+            // Ciclo de actualización del temporizador
+            updateDisplay(endTime);
+            interval = setInterval(() => updateDisplay(endTime), 1000);
+        }
+
+        function updateDisplay(endTime) {
+            const now = new Date();
+            const diff = endTime - now;
+
+            if (diff <= 0) {
+                clearInterval(interval);
+                const display = document.getElementById('time-remaining');
+                display.innerText = "00:00:00";
+                display.classList.add('time-up');
+                return;
+            }
+
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById('time-remaining').innerText = 
+                h.toString().padStart(2, '0') + ':' + 
+                m.toString().padStart(2, '0') + ':' + 
+                s.toString().padStart(2, '0');
+        }
+    </script>
+</body>
+</html>
