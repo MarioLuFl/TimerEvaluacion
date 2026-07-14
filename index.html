@@ -65,16 +65,8 @@
             position: relative;
         }
 
-        /* El panel de configuración se mantiene angosto y centrado */
-        #setup-screen {
-            max-width: 900px;
-        }
-
-        /* La pantalla de proyección se ensancha para ocupar todo el proyector */
-        #display-screen {
-            max-width: 1400px;
-            display: none;
-        }
+        #setup-screen { max-width: 900px; }
+        #display-screen { max-width: 1400px; display: none; }
 
         h1 { margin-top: 0; font-weight: 700; color: var(--accent); text-align: center; font-size: 2.2em;}
         p.subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 30px; margin-top: -10px;}
@@ -90,7 +82,7 @@
         }
         .sync-loading { background-color: #ffeaa7; color: #d35400; }
         .sync-success { background-color: #55efc4; color: #00b894; }
-        .sync-error { background-color: #ff7675; color: #d63031; }
+        .sync-error { background-color: #ff7675; color: #ffffff; }
 
         /* --- BOTÓN MODO DÍA/NOCHE --- */
         #theme-toggle {
@@ -111,11 +103,29 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             z-index: 1000;
         }
-        #theme-toggle:hover {
-            background-color: var(--border-color);
-        }
+        #theme-toggle:hover { background-color: var(--border-color); }
 
-        /* --- ESTILOS FORMULARIO (CONFIG) --- */
+        /* --- BOTÓN EDITAR EN PANTALLA --- */
+        #edit-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            opacity: 0.4; /* Semi-transparente para no distraer */
+            transition: opacity 0.3s;
+        }
+        #edit-btn:hover { opacity: 1; }
+
+        /* --- ESTILOS FORMULARIO --- */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -147,15 +157,8 @@
             font-family: inherit;
         }
 
-        textarea {
-            resize: vertical;
-            min-height: 110px;
-        }
-        
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
+        textarea { resize: vertical; min-height: 110px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
 
         .btn-start {
             background-color: var(--accent);
@@ -177,159 +180,49 @@
             transform: translateY(-2px);
         }
 
-        /* --- DISTRIBUCIÓN DE PANTALLA EN DOS COLUMNAS (PROYECTOR) --- */
+        /* --- DISTRIBUCIÓN PANTALLA PROYECTOR --- */
         .projection-grid {
             display: grid;
             grid-template-columns: 1.6fr 1fr;
             gap: 40px;
             align-items: start;
         }
+        .left-column, .right-column { display: flex; flex-direction: column; gap: 20px; }
 
-        .left-column {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .right-column {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        /* --- DETALLES DE EVALUACIÓN (DERECHA) --- */
-        .eval-header {
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 20px;
-            text-align: left;
-        }
-
-        .eval-title {
-            font-size: 2.1em;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 0;
-            line-height: 1.2;
-        }
-        
+        .eval-header { border-bottom: 2px solid var(--border-color); padding-bottom: 20px; text-align: left; }
+        .eval-title { font-size: 2.1em; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1.2; }
         .eval-type-badge {
-            display: inline-block;
-            background-color: var(--accent);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 50px;
-            font-size: 0.85em;
-            font-weight: 600;
-            text-transform: uppercase;
-            margin-top: 10px;
+            display: inline-block; background-color: var(--accent); color: white;
+            padding: 5px 15px; border-radius: 50px; font-size: 0.85em; font-weight: 600; text-transform: uppercase; margin-top: 10px;
         }
 
-        .info-vertical-stack {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            text-align: left;
-        }
-
-        .info-item {
-            background-color: var(--bg-color);
-            padding: 15px 20px;
-            border-radius: 10px;
-            border-left: 4px solid var(--border-color);
-        }
-        
+        .info-vertical-stack { display: flex; flex-direction: column; gap: 15px; text-align: left; }
+        .info-item { background-color: var(--bg-color); padding: 15px 20px; border-radius: 10px; border-left: 4px solid var(--border-color); }
         .info-item.accent-border { border-left-color: var(--accent); }
+        .info-label { font-size: 0.75em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .info-value { font-size: 1.15em; font-weight: 600; color: var(--text-main); }
 
-        .info-label {
-            font-size: 0.75em;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-        
-        .info-value {
-            font-size: 1.15em;
-            font-weight: 600;
-            color: var(--text-main);
-        }
-
-        /* --- TEMPORIZADOR GRANDE (IZQUIERDA) --- */
-        .timer-container {
-            background-color: var(--bg-color);
-            border-radius: 15px;
-            padding: 30px 10px;
-            text-align: center;
-        }
-
-        .timer-label {
-            font-size: 1.3em;
-            color: var(--text-secondary);
-            font-weight: 600;
-            letter-spacing: 3px;
-            margin-bottom: 10px;
-        }
-
+        .timer-container { background-color: var(--bg-color); border-radius: 15px; padding: 30px 10px; text-align: center; }
+        .timer-label { font-size: 1.3em; color: var(--text-secondary); font-weight: 600; letter-spacing: 3px; margin-bottom: 10px; }
         .timer {
-            font-size: 11em; /* Gigante para el proyector */
-            font-weight: 700;
-            color: var(--timer-color);
-            line-height: 0.9;
-            font-variant-numeric: tabular-nums;
-            text-shadow: 0 0 20px rgba(214, 48, 49, 0.15);
+            font-size: 11em; font-weight: 700; color: var(--timer-color); line-height: 0.9;
+            font-variant-numeric: tabular-nums; text-shadow: 0 0 20px rgba(214, 48, 49, 0.15);
         }
-        
         [data-theme="dark"] .timer { text-shadow: 0 0 30px rgba(255, 118, 117, 0.4); }
 
-        .time-up { 
-            animation: blink-red 1s infinite; 
-        }
+        .time-up { animation: blink-red 1s infinite; }
+        @keyframes blink-red { 50% { opacity: 0.5; color: var(--text-main); text-shadow: none; } }
 
-        @keyframes blink-red { 
-            50% { opacity: 0.5; color: var(--text-main); text-shadow: none; } 
-        }
-
-        /* --- CAJA DE INDICACIONES (IZQUIERDA, ABAJO DEL TIMER) --- */
         .instructions-container {
-            background-color: var(--warn-bg);
-            border: 2px solid var(--warn-border);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: left;
-            box-shadow: var(--shadow);
+            background-color: var(--warn-bg); border: 2px solid var(--warn-border);
+            border-radius: 15px; padding: 30px; text-align: left; box-shadow: var(--shadow);
         }
+        .instructions-title { font-size: 1.2em; font-weight: 700; color: var(--timer-color); letter-spacing: 1px; margin-top: 0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .instructions-list { margin: 0; padding-left: 20px; font-size: 1.05em; line-height: 1.7; font-weight: 600; color: var(--text-main); }
+        .instructions-list li { margin-bottom: 8px; }
 
-        .instructions-title {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: var(--timer-color);
-            letter-spacing: 1px;
-            margin-top: 0;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .instructions-list {
-            margin: 0;
-            padding-left: 20px;
-            font-size: 1.05em;
-            line-height: 1.7;
-            font-weight: 600; /* Negrita para que se lea con claridad desde atrás */
-            color: var(--text-main);
-        }
-
-        .instructions-list li {
-            margin-bottom: 8px;
-        }
-
-        /* --- RESPONSIVIDAD PARA PANTALLAS PEQUEÑAS --- */
         @media (max-width: 992px) {
-            .projection-grid {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
+            .projection-grid { grid-template-columns: 1fr; gap: 30px; }
             .timer { font-size: 7em; }
             .container { padding: 30px; }
         }
@@ -341,6 +234,7 @@
         <span id="theme-icon">🌙</span> <span id="theme-text" style="font-size: 0.8em;">Noche</span>
     </button>
 
+    <!-- PANTALLA CONFIGURACIÓN -->
     <div class="container" id="setup-screen">
         <h1>Configuración de Evaluación</h1>
         <p class="subtitle">Ingresa los datos para generar la pantalla de proyección</p>
@@ -370,7 +264,12 @@
                 <input type="text" id="prof-name" placeholder="Ej: Msc. Mario Lupaca Flores" value="Msc. Mario Lupaca Flores">
             </div>
             
-            <div class="form-group full-width">
+            <div class="form-group">
+                <label>Hora de Inicio (Mostrada en pantalla)</label>
+                <input type="time" id="start-time-input">
+            </div>
+
+            <div class="form-group">
                 <label>Tipo de Temporizador</label>
                 <select id="timer-type" onchange="toggleTimerInputs()">
                     <option value="countdown">Cuenta Regresiva (Minutos)</option>
@@ -378,13 +277,13 @@
                 </select>
             </div>
             
-            <div class="form-group" id="div-duration">
+            <div class="form-group full-width" id="div-duration">
                 <label>Duración (en minutos)</label>
                 <input type="number" id="duration-mins" value="60" min="1">
             </div>
             
-            <div class="form-group" id="div-endtime" style="display: none;">
-                <label>Hora de Fin</label>
+            <div class="form-group full-width" id="div-endtime" style="display: none;">
+                <label>Hora de Fin Exacta</label>
                 <input type="time" id="end-time-input">
             </div>
 
@@ -400,15 +299,16 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
         <button class="btn-start" onclick="startTimer()" id="btn-start" disabled>Esperando sincronización...</button>
     </div>
 
+    <!-- PANTALLA PROYECCIÓN -->
     <div class="container" id="display-screen">
+        <button id="edit-btn" onclick="editConfig()">⚙️ Editar Datos</button>
+        
         <div class="projection-grid">
-            
             <div class="left-column">
                 <div class="timer-container">
                     <div class="timer-label">TIEMPO RESTANTE</div>
                     <div class="timer" id="time-remaining">00:00:00</div>
                 </div>
-
                 <div class="instructions-container" id="instructions-box">
                     <div class="instructions-title">🚨 INDICACIONES DE LA EVALUACIÓN</div>
                     <ul class="instructions-list" id="disp-instructions"></ul>
@@ -420,7 +320,6 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
                     <div class="eval-title" id="disp-course"></div>
                     <div class="eval-type-badge" id="disp-eval-type"></div>
                 </div>
-
                 <div class="info-vertical-stack">
                     <div class="info-item">
                         <div class="info-label">Código</div>
@@ -444,13 +343,13 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
     <script>
         let interval;
-        let timeOffset = 0; // Guardará la diferencia entre la PC y la hora de internet
+        let timeOffset = 0; 
+        let globalEndTime = null;
 
         // --- GESTIÓN DE TEMAS (DÍA/NOCHE) ---
         const themeToggle = document.getElementById('theme-toggle');
@@ -465,7 +364,6 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
         themeToggle.addEventListener('click', () => {
             let theme = body.getAttribute('data-theme');
             let newTheme = theme === 'light' ? 'dark' : 'light';
-            
             body.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
             updateThemeUI(newTheme);
@@ -473,54 +371,63 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
 
         function updateThemeUI(theme) {
             if (theme === 'dark') {
-                themeIcon.innerText = '☀️';
-                themeText.innerText = 'Día';
+                themeIcon.innerText = '☀️'; themeText.innerText = 'Día';
             } else {
-                themeIcon.innerText = '🌙';
-                themeText.innerText = 'Noche';
+                themeIcon.innerText = '🌙'; themeText.innerText = 'Noche';
             }
         }
 
-        // --- SINCRONIZACIÓN DE HORA (NTP) ---
+        // --- SINCRONIZACIÓN ROBUSTA DE HORA (Doble API) ---
         async function syncTime() {
             const btnStart = document.getElementById('btn-start');
             const indicator = document.getElementById('sync-indicator');
             
             try {
-                // Fetch a la API pública para la zona horaria de Lima
-                const response = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
-                if (!response.ok) throw new Error("Error en la respuesta de la API");
-                
+                // Intento 1: TimeAPI (Muy robusta y permisiva con redes universitarias)
+                const response = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=America/Lima');
+                if (!response.ok) throw new Error("Fallo API 1");
                 const data = await response.json();
-                const realTime = new Date(data.datetime);
-                const localTime = new Date();
-                
-                // Calculamos el desfase de la computadora
-                timeOffset = realTime.getTime() - localTime.getTime();
+                const realTime = new Date(data.dateTime);
+                timeOffset = realTime.getTime() - new Date().getTime();
                 
                 indicator.className = 'sync-status sync-success';
-                indicator.innerText = '✅ Hora sincronizada correctamente con el servidor de Perú.';
-            } catch (error) {
-                console.warn("No se pudo obtener la hora de internet, usando hora local.", error);
-                indicator.className = 'sync-status sync-error';
-                indicator.innerText = '⚠️ Sin internet. Se utilizará la hora local de esta computadora.';
-                timeOffset = 0; // Si falla, el desfase es 0 (usa la hora de la PC)
+                indicator.innerText = '✅ Hora sincronizada correctamente (Servidor Principal).';
+            } catch (error1) {
+                try {
+                    // Intento 2: WorldTimeAPI (Respaldo)
+                    const response2 = await fetch('https://worldtimeapi.org/api/timezone/America/Lima');
+                    if (!response2.ok) throw new Error("Fallo API 2");
+                    const data2 = await response2.json();
+                    const realTime2 = new Date(data2.datetime);
+                    timeOffset = realTime2.getTime() - new Date().getTime();
+                    
+                    indicator.className = 'sync-status sync-success';
+                    indicator.innerText = '✅ Hora sincronizada correctamente (Servidor de Respaldo).';
+                } catch (error2) {
+                    // Si ambas fallan (ej. firewall total)
+                    indicator.className = 'sync-status sync-error';
+                    indicator.innerText = '⚠️ Red restringida/Sin internet. Usando reloj local de la PC.';
+                    timeOffset = 0;
+                }
             } finally {
-                // Habilitamos el botón independientemente de si hubo error o no
                 btnStart.disabled = false;
                 btnStart.innerText = 'Iniciar y Proyectar';
+
+                // Precargar la hora actual en el input de inicio (compensada con el offset)
+                const now = getRealNow();
+                document.getElementById('start-time-input').value = 
+                    now.getHours().toString().padStart(2, '0') + ':' + 
+                    now.getMinutes().toString().padStart(2, '0');
             }
         }
 
-        // Función que retorna la hora real compensando el error del reloj de la PC
         function getRealNow() {
             return new Date(Date.now() + timeOffset);
         }
 
-        // Iniciar sincronización al cargar la web
         syncTime();
 
-        // --- LÓGICA DEL TEMPORIZADOR ---
+        // --- LÓGICA DEL TEMPORIZADOR Y EDICIÓN ---
         function toggleTimerInputs() {
             const type = document.getElementById('timer-type').value;
             if (type === 'countdown') {
@@ -539,49 +446,47 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
         }
 
         function startTimer() {
-            const now = getRealNow(); // Usamos la hora sincronizada
-            let endTime;
-
+            const now = getRealNow(); 
             const type = document.getElementById('timer-type').value;
 
+            // Calcular y guardar la hora de fin global
             if (type === 'countdown') {
                 const mins = parseInt(document.getElementById('duration-mins').value);
                 if (isNaN(mins) || mins <= 0) return alert('Ingrese una duración válida.');
-                endTime = new Date(now.getTime() + mins * 60000);
+                globalEndTime = new Date(now.getTime() + mins * 60000);
             } else {
                 const timeStr = document.getElementById('end-time-input').value;
                 if (!timeStr) return alert('Ingrese una hora de fin.');
                 const [hours, minutes] = timeStr.split(':');
-                endTime = new Date(now);
-                endTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-                
-                if (endTime < now) endTime.setDate(endTime.getDate() + 1);
+                globalEndTime = new Date(now);
+                globalEndTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+                if (globalEndTime < now) globalEndTime.setDate(globalEndTime.getDate() + 1);
             }
 
-            // Llenar datos en pantalla de proyección
+            // Datos de texto
             document.getElementById('disp-course').innerText = document.getElementById('course-name').value;
             document.getElementById('disp-eval-type').innerText = document.getElementById('eval-type').value;
             document.getElementById('disp-code').innerText = document.getElementById('course-code').value;
             document.getElementById('disp-prof').innerText = document.getElementById('prof-name').value;
             
+            // Fecha
             const day = now.getDate().toString().padStart(2, '0');
             const month = (now.getMonth() + 1).toString().padStart(2, '0');
-            const year = now.getFullYear();
-            document.getElementById('disp-date').innerText = `${day}/${month}/${year}`;
+            document.getElementById('disp-date').innerText = `${day}/${month}/${now.getFullYear()}`;
             
-            document.getElementById('disp-start').innerText = formatTimeStr(now);
-            document.getElementById('disp-end').innerText = formatTimeStr(endTime);
+            // Horas a mostrar (La de inicio es la que ingresó manualmente, la de fin es la calculada)
+            const startInputVal = document.getElementById('start-time-input').value || formatTimeStr(now).substring(0,5);
+            document.getElementById('disp-start').innerText = startInputVal;
+            document.getElementById('disp-end').innerText = formatTimeStr(globalEndTime);
 
-            // Cargar indicaciones/reglas en la lista
+            // Indicaciones
             const instructionsInput = document.getElementById('instructions-input').value;
             const instructionsList = document.getElementById('disp-instructions');
             const instructionsBox = document.getElementById('instructions-box');
             
-            instructionsList.innerHTML = ''; // Limpiar anteriores
-            
+            instructionsList.innerHTML = '';
             if (instructionsInput.trim()) {
-                const lines = instructionsInput.split('\n');
-                lines.forEach(line => {
+                instructionsInput.split('\n').forEach(line => {
                     if (line.trim()) {
                         const li = document.createElement('li');
                         li.innerText = line.trim();
@@ -590,19 +495,41 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
                 });
                 instructionsBox.style.display = 'block';
             } else {
-                instructionsBox.style.display = 'none'; // Ocultar si no hay texto
+                instructionsBox.style.display = 'none';
             }
 
             // Cambiar pantallas
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('display-screen').style.display = 'block';
+            
+            // Quitar animación roja por si venía de un tiempo expirado
+            document.getElementById('time-remaining').classList.remove('time-up');
 
-            updateDisplay(endTime);
-            interval = setInterval(() => updateDisplay(endTime), 1000);
+            updateDisplay(globalEndTime);
+            clearInterval(interval);
+            interval = setInterval(() => updateDisplay(globalEndTime), 1000);
+        }
+
+        // Función para volver atrás sin perder el tiempo transcurrido
+        function editConfig() {
+            clearInterval(interval);
+            document.getElementById('display-screen').style.display = 'none';
+            document.getElementById('setup-screen').style.display = 'block';
+
+            // Truco: Pasamos automáticamente a "Hora de Fin" y colocamos la hora calculada.
+            // Así, si el profesor vuelve a iniciar, el contador no se reinicia desde 0, sino que respeta la hora original de término.
+            if (globalEndTime) {
+                document.getElementById('timer-type').value = 'endtime';
+                toggleTimerInputs();
+                
+                document.getElementById('end-time-input').value = 
+                    globalEndTime.getHours().toString().padStart(2, '0') + ':' +
+                    globalEndTime.getMinutes().toString().padStart(2, '0');
+            }
         }
 
         function updateDisplay(endTime) {
-            const now = getRealNow(); // Consultamos la hora sincronizada en cada tick
+            const now = getRealNow();
             const diff = endTime - now;
             const display = document.getElementById('time-remaining');
 
