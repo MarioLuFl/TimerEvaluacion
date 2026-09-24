@@ -170,11 +170,11 @@
         /* --- DISTRIBUCIÓN PANTALLA PROYECTOR --- */
         .projection-grid {
             display: grid;
-            grid-template-columns: 1.6fr 1fr;
+            grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
             gap: 40px;
             align-items: start;
         }
-        .left-column, .right-column { display: flex; flex-direction: column; gap: 20px; }
+        .left-column, .right-column { min-width: 0; display: flex; flex-direction: column; gap: 20px; }
 
         .eval-header { border-bottom: 2px solid var(--border-color); padding-bottom: 20px; text-align: left; }
         .eval-title { font-size: 2.1em; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1.2; }
@@ -190,11 +190,21 @@
         .info-value { font-size: 1.15em; font-weight: 600; color: var(--text-main); }
 
         /* Contenedor del Temporizador y Reloj Oficial */
-        .timer-container { background-color: var(--bg-color); border-radius: 15px; padding: 25px 10px; text-align: center; }
+        .timer-container { container-type: inline-size; min-width: 0; background-color: var(--bg-color); border-radius: 15px; padding: 25px 10px; text-align: center; }
         .timer-label { font-size: 1.3em; color: var(--text-secondary); font-weight: 600; letter-spacing: 3px; margin-bottom: 5px; }
         .timer {
-            font-size: 11em; font-weight: 700; color: var(--timer-color); line-height: 0.9;
+            /* Ocho caracteres de ancho fijo: los segundos no alteran la distribución. */
+            font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Liberation Mono', monospace;
+            font-size: clamp(2rem, 8vw, 9.5rem);
+            width: 8ch;
+            margin-inline: auto;
+            white-space: nowrap;
+            font-weight: 700; color: var(--timer-color); line-height: 0.9;
             font-variant-numeric: tabular-nums; text-shadow: 0 0 20px rgba(214, 48, 49, 0.15);
+        }
+        /* Escala con el ancho disponible dentro de la tarjeta. */
+        @supports (font-size: 1cqw) {
+            .timer { font-size: min(11rem, 20cqw); }
         }
         [data-theme="dark"] .timer { text-shadow: 0 0 30px rgba(255, 118, 117, 0.4); }
 
@@ -208,6 +218,11 @@
             padding-top: 15px;
         }
         .real-clock-val {
+            letter-spacing: normal;
+            display: inline-block;
+            width: 8ch;
+            white-space: nowrap;
+            font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Liberation Mono', monospace;
             color: var(--accent);
             font-variant-numeric: tabular-nums;
         }
@@ -225,15 +240,14 @@
 
         @media (max-width: 992px) {
             .projection-grid { grid-template-columns: 1fr; gap: 30px; }
-            .timer { font-size: 7em; }
             .container { padding: 30px; }
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
     <button id="theme-toggle">
-        <span id="theme-icon">🌙</span> <span id="theme-text" style="font-size: 0.8em;">Noche</span>
+        <span id="theme-icon">☀️</span> <span id="theme-text" style="font-size: 0.8em;">Día</span>
     </button>
 
     <div class="container" id="setup-screen">
@@ -356,7 +370,12 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
         const themeText = document.getElementById('theme-text');
         const body = document.body;
 
-        const currentTheme = localStorage.getItem('theme') || 'light';
+        // Noche por defecto; conserva un tema elegido explícitamente.
+        let currentTheme = 'dark';
+        try {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light' || savedTheme === 'dark') currentTheme = savedTheme;
+        } catch (_) { /* Permite abrir el archivo si el almacenamiento está bloqueado. */ }
         body.setAttribute('data-theme', currentTheme);
         updateThemeUI(currentTheme);
 
@@ -364,7 +383,7 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
             let theme = body.getAttribute('data-theme');
             let newTheme = theme === 'light' ? 'dark' : 'light';
             body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
+            try { localStorage.setItem('theme', newTheme); } catch (_) {}
             updateThemeUI(newTheme);
         });
 
