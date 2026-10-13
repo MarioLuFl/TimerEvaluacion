@@ -42,6 +42,7 @@
             box-sizing: border-box;
             transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
+        [hidden] { display: none !important; }
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -93,10 +94,15 @@
         #theme-toggle:hover { background-color: var(--border-color); }
 
         /* --- BOTÓN EDITAR EN PANTALLA --- */
-        #edit-btn {
+        .projection-tools {
             position: fixed;
             bottom: 20px;
             right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+        .projection-tools button {
             background: var(--accent);
             color: white;
             border: none;
@@ -106,11 +112,10 @@
             font-size: 1em;
             font-weight: 600;
             box-shadow: var(--shadow);
-            z-index: 1000;
             opacity: 0.4;
             transition: opacity 0.3s;
         }
-        #edit-btn:hover { opacity: 1; }
+        .projection-tools:hover button, .projection-tools button:focus-visible { opacity: 1; }
 
         /* --- ESTILOS FORMULARIO --- */
         .form-grid {
@@ -146,6 +151,108 @@
 
         textarea { resize: vertical; min-height: 110px; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); }
+        button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+        /* --- IMAGEN OPCIONAL Y VISTA PREVIA --- */
+        .btn-secondary {
+            background: var(--bg-color);
+            color: var(--accent);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px 15px;
+            font: inherit;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-secondary:hover { border-color: var(--accent); }
+        .image-dropzone {
+            border: 2px dashed var(--border-color);
+            border-radius: 14px;
+            padding: 25px;
+            text-align: center;
+            background: var(--bg-color);
+        }
+        .image-dropzone.is-dragging { border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--accent); }
+        .upload-icon { display: block; font-size: 2em; margin-bottom: 8px; }
+        .image-dropzone p { margin: 0 0 12px; }
+        .field-hint { margin: 10px 0 0; color: var(--text-secondary); font-size: 0.8em; line-height: 1.5; }
+        .image-preview {
+            display: grid;
+            grid-template-columns: 150px minmax(0, 1fr);
+            align-items: center;
+            gap: 20px;
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+        }
+        .image-preview img { display: block; width: 100%; height: 110px; object-fit: contain; background: var(--bg-color); border-radius: 8px; }
+        .image-preview strong { display: block; overflow-wrap: anywhere; font-size: 0.9em; }
+        .image-preview .field-hint { margin: 5px 0 10px; }
+        .image-status { margin: 10px 0 0; font-size: 0.85em; color: var(--text-secondary); }
+        .image-status.is-error { color: var(--timer-color); }
+
+        /* --- TARJETA DE IMAGEN EN LA PROYECCIÓN --- */
+        .image-card {
+            width: var(--image-card-width, 100%);
+            max-width: 100%;
+            align-self: center;
+            padding: 15px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+        }
+        .image-card-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.85em; font-weight: 600; }
+        .image-card-header .btn-secondary { padding: 5px 9px; font-size: 0.85em; }
+        .image-frame { position: relative; height: var(--image-height, 280px); overflow: hidden; border-radius: 10px; }
+        .image-frame img { display: block; width: 100%; height: 100%; object-fit: var(--image-fit, contain); object-position: center; }
+        .image-resize-handle {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            color: var(--accent);
+            cursor: nwse-resize;
+            touch-action: none;
+            font-size: 1.3em;
+            opacity: 0.55;
+        }
+        .image-card:hover .image-resize-handle, .image-resize-handle:focus-visible { opacity: 1; }
+        body.is-resizing-image { cursor: nwse-resize; user-select: none; }
+
+        /* --- AJUSTES EN TIEMPO REAL --- */
+        .view-panel {
+            position: fixed;
+            right: 20px;
+            bottom: 85px;
+            width: 330px;
+            max-width: calc(100vw - 24px);
+            max-height: calc(100vh - 110px);
+            overflow-y: auto;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            z-index: 1100;
+        }
+        .view-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+        .view-panel-header h2 { margin: 0; font-size: 1em; }
+        .close-panel-btn { border: 0; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 1.5em; padding: 0 5px; }
+        .view-control { margin-bottom: 18px; }
+        .view-control label { display: flex; justify-content: space-between; gap: 10px; text-transform: none; letter-spacing: 0; font-size: 0.85em; }
+        .view-control output { color: var(--accent); white-space: nowrap; }
+        .view-control input[type="range"] { padding: 0; border: 0; height: 22px; cursor: pointer; accent-color: var(--accent); }
+        .view-control input:disabled { opacity: 0.5; cursor: default; }
+        .view-control select { padding: 10px; font-size: 0.85em; }
+        .image-view-controls { padding-top: 18px; border-top: 1px solid var(--border-color); }
+        .view-panel .panel-reset { width: 100%; }
 
         .btn-start {
             background-color: var(--accent);
@@ -170,7 +277,7 @@
         /* --- DISTRIBUCIÓN PANTALLA PROYECTOR --- */
         .projection-grid {
             display: grid;
-            grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+            grid-template-columns: minmax(0, var(--left-column-size, 1.6fr)) minmax(0, var(--right-column-size, 1fr));
             gap: 40px;
             align-items: start;
         }
@@ -242,6 +349,18 @@
         @media (max-width: 992px) {
             .projection-grid { grid-template-columns: 1fr; gap: 30px; }
             .container { padding: 30px; }
+        }
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+            .container { padding: 20px; }
+            h1 { font-size: 1.6em; }
+            .image-preview { grid-template-columns: 1fr; }
+            .image-preview img { height: 150px; }
+            .projection-tools { bottom: 12px; right: 12px; gap: 6px; }
+            .projection-tools button { font-size: 0.8em; padding: 10px 12px; }
+            .view-panel { right: 12px; bottom: 65px; }
+            .image-card-header { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -325,15 +444,38 @@
 Prohibido el intercambio de materiales y salir del aula.
 Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen derecho a reclamo.</textarea>
             </div>
+
+            <div class="form-group full-width">
+                <label for="image-upload">Imagen para la proyección (opcional)</label>
+                <input type="file" id="image-upload" accept="image/*" hidden>
+                <div class="image-dropzone" id="image-dropzone">
+                    <span class="upload-icon" aria-hidden="true">🖼️</span>
+                    <p>Arrastra una imagen aquí</p>
+                    <button type="button" class="btn-secondary" id="choose-image-btn">Seleccionar imagen</button>
+                    <p class="field-hint">Se mostrará debajo del reloj. Podrás ajustar su tamaño durante la proyección.</p>
+                </div>
+                <div class="image-preview" id="image-preview-box" hidden>
+                    <img id="image-preview" alt="Vista previa de la imagen seleccionada">
+                    <div>
+                        <strong id="image-file-name"></strong>
+                        <p class="field-hint" id="image-file-details"></p>
+                        <button type="button" class="btn-secondary" id="remove-image-btn">Quitar imagen</button>
+                    </div>
+                </div>
+                <p class="image-status" id="image-status" role="status" aria-live="polite" hidden></p>
+            </div>
         </div>
 
         <button class="btn-start" onclick="startTimer()" id="btn-start">Iniciar y Proyectar</button>
     </div>
 
     <div class="container" id="display-screen">
-        <button id="edit-btn" onclick="editConfig()">⚙️ Editar Datos</button>
+        <div class="projection-tools">
+            <button type="button" id="view-toggle" aria-expanded="false" aria-controls="view-panel">↔ Ajustar vista</button>
+            <button type="button" id="edit-btn" onclick="editConfig()">⚙️ Editar Datos</button>
+        </div>
         
-        <div class="projection-grid">
+        <div class="projection-grid" id="projection-grid">
             <div class="left-column">
                 <div class="timer-container">
                     <div class="timer-label">TIEMPO RESTANTE</div>
@@ -343,6 +485,16 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                         Hora Actual: <span id="real-time-clock" class="real-clock-val">00:00:00</span>
                     </div>
                 </div>
+                <section class="image-card" id="projection-image-card" aria-label="Imagen de apoyo" hidden>
+                    <div class="image-card-header">
+                        <span>Imagen de apoyo</span>
+                        <button type="button" class="btn-secondary" id="image-adjust-btn">↔ Ajustar</button>
+                    </div>
+                    <div class="image-frame" id="projection-image-frame">
+                        <img id="projection-image" alt="Imagen de apoyo para la evaluación" draggable="false">
+                        <button type="button" class="image-resize-handle" id="image-resize-handle" title="Arrastra para cambiar el tamaño" aria-label="Redimensionar imagen. También puedes usar las flechas del teclado.">↘</button>
+                    </div>
+                </section>
                 <div class="instructions-container" id="instructions-box">
                     <div class="instructions-title">🚨 INDICACIONES DE LA EVALUACIÓN</div>
                     <ul class="instructions-list" id="disp-instructions"></ul>
@@ -389,6 +541,37 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             </div>
         </div>
     </div>
+
+    <aside class="view-panel" id="view-panel" aria-labelledby="view-panel-title" hidden>
+        <div class="view-panel-header">
+            <h2 id="view-panel-title">Ajustar vista</h2>
+            <button type="button" class="close-panel-btn" id="close-view-panel" aria-label="Cerrar ajustes">×</button>
+        </div>
+        <div class="view-control">
+            <label for="column-width">Columna izquierda <output id="column-width-output" for="column-width">62 %</output></label>
+            <input type="range" id="column-width" min="40" max="75" step="1" value="62">
+            <p class="field-hint" id="column-width-hint">Espacio para el reloj, la imagen y las indicaciones.</p>
+        </div>
+        <div class="image-view-controls" id="image-view-controls" hidden>
+            <div class="view-control">
+                <label for="image-width">Ancho de imagen <output id="image-width-output" for="image-width">100 %</output></label>
+                <input type="range" id="image-width" min="40" max="100" step="1" value="100">
+            </div>
+            <div class="view-control">
+                <label for="image-height">Alto de imagen <output id="image-height-output" for="image-height">280 px</output></label>
+                <input type="range" id="image-height" min="160" max="640" step="10" value="280">
+            </div>
+            <div class="view-control">
+                <label for="image-fit">Mostrar imagen</label>
+                <select id="image-fit">
+                    <option value="contain">Imagen completa</option>
+                    <option value="cover">Llenar tarjeta (recorta bordes)</option>
+                </select>
+                <p class="field-hint">También puedes arrastrar la esquina inferior derecha de la imagen.</p>
+            </div>
+        </div>
+        <button type="button" class="btn-secondary panel-reset" id="reset-view-btn">Restablecer vista</button>
+    </aside>
 
     <script>
         let interval;
@@ -477,6 +660,255 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             }
         }
 
+        // --- CARGA LOCAL DE IMAGEN Y VISTA PREVIA ---
+        const imageUpload = document.getElementById('image-upload');
+        const imageDropzone = document.getElementById('image-dropzone');
+        let selectedImage = null;
+        let pendingImageUrl = null;
+        let imageLoadRequest = 0;
+        let dragDepth = 0;
+
+        function setImageStatus(message, isError = false) {
+            const status = document.getElementById('image-status');
+            status.textContent = message;
+            status.hidden = !message;
+            status.classList.toggle('is-error', isError);
+        }
+
+        function syncImageUI() {
+            const hasImage = Boolean(selectedImage);
+            document.getElementById('image-preview-box').hidden = !hasImage;
+            document.getElementById('projection-image-card').hidden = !hasImage;
+            document.getElementById('image-view-controls').hidden = !hasImage;
+            const preview = document.getElementById('image-preview');
+            const projection = document.getElementById('projection-image');
+
+            if (hasImage) {
+                preview.src = selectedImage.url;
+                projection.src = selectedImage.url;
+                document.getElementById('image-file-name').textContent = selectedImage.name;
+                document.getElementById('image-file-details').textContent = `${selectedImage.width} × ${selectedImage.height} px`;
+            } else {
+                preview.removeAttribute('src');
+                projection.removeAttribute('src');
+                document.getElementById('image-file-name').textContent = '';
+                document.getElementById('image-file-details').textContent = '';
+            }
+        }
+
+        function loadImageFile(file) {
+            if (!file) return;
+            const request = ++imageLoadRequest;
+            if (pendingImageUrl) {
+                URL.revokeObjectURL(pendingImageUrl);
+                pendingImageUrl = null;
+            }
+            const isImage = file.type.startsWith('image/') ||
+                (!file.type && /\.(png|jpe?g|gif|webp|bmp|svg|avif)$/i.test(file.name));
+            if (!isImage) {
+                setImageStatus('Selecciona un archivo de imagen válido.', true);
+                return;
+            }
+
+            const url = URL.createObjectURL(file);
+            pendingImageUrl = url;
+            setImageStatus('Cargando imagen…');
+            const probe = new Image();
+            probe.onload = () => {
+                if (request !== imageLoadRequest) {
+                    URL.revokeObjectURL(url);
+                    return;
+                }
+                pendingImageUrl = null;
+                const previousUrl = selectedImage?.url;
+                selectedImage = { url, name: file.name, width: probe.naturalWidth, height: probe.naturalHeight };
+                syncImageUI();
+                if (previousUrl) URL.revokeObjectURL(previousUrl);
+                setImageStatus('');
+            };
+            probe.onerror = () => {
+                URL.revokeObjectURL(url);
+                if (request !== imageLoadRequest) return;
+                pendingImageUrl = null;
+                setImageStatus('No se pudo abrir la imagen. Prueba con otro archivo.', true);
+            };
+            probe.src = url;
+        }
+
+        function removeSelectedImage() {
+            ++imageLoadRequest;
+            if (pendingImageUrl) URL.revokeObjectURL(pendingImageUrl);
+            if (selectedImage) URL.revokeObjectURL(selectedImage.url);
+            pendingImageUrl = null;
+            selectedImage = null;
+            imageUpload.value = '';
+            finishImageResize();
+            syncImageUI();
+            setImageStatus('');
+        }
+
+        document.getElementById('choose-image-btn').addEventListener('click', () => imageUpload.click());
+        document.getElementById('remove-image-btn').addEventListener('click', removeSelectedImage);
+        imageUpload.addEventListener('change', () => {
+            loadImageFile(imageUpload.files[0]);
+            imageUpload.value = '';
+        });
+        imageDropzone.addEventListener('dragenter', event => {
+            event.preventDefault();
+            ++dragDepth;
+            imageDropzone.classList.add('is-dragging');
+        });
+        imageDropzone.addEventListener('dragover', event => event.preventDefault());
+        imageDropzone.addEventListener('dragleave', event => {
+            event.preventDefault();
+            dragDepth = Math.max(0, dragDepth - 1);
+            if (!dragDepth) imageDropzone.classList.remove('is-dragging');
+        });
+        imageDropzone.addEventListener('drop', event => {
+            event.preventDefault();
+            dragDepth = 0;
+            imageDropzone.classList.remove('is-dragging');
+            loadImageFile(event.dataTransfer.files[0]);
+        });
+
+        // Evita que soltar un archivo fuera del área abra otra página.
+        ['dragover', 'drop'].forEach(eventName => {
+            document.addEventListener(eventName, event => {
+                if (Array.from(event.dataTransfer?.types || []).includes('Files')) event.preventDefault();
+            });
+        });
+
+        // --- DISTRIBUCIÓN E IMAGEN AJUSTABLES SIN REINICIAR EL RELOJ ---
+        const defaultView = Object.freeze({ column: 62, imageWidth: 100, imageHeight: 280, imageFit: 'contain' });
+        const viewSettings = { ...defaultView };
+        const viewPanel = document.getElementById('view-panel');
+        const viewToggle = document.getElementById('view-toggle');
+        const imageResizeHandle = document.getElementById('image-resize-handle');
+        let imageResize = null;
+
+        function applyViewSettings() {
+            const grid = document.getElementById('projection-grid');
+            grid.style.setProperty('--left-column-size', `${viewSettings.column}fr`);
+            grid.style.setProperty('--right-column-size', `${100 - viewSettings.column}fr`);
+            const card = document.getElementById('projection-image-card');
+            card.style.setProperty('--image-card-width', `${viewSettings.imageWidth}%`);
+            card.style.setProperty('--image-height', `${viewSettings.imageHeight}px`);
+            card.style.setProperty('--image-fit', viewSettings.imageFit);
+
+            document.getElementById('column-width').value = viewSettings.column;
+            document.getElementById('column-width-output').textContent = `${viewSettings.column} %`;
+            document.getElementById('image-width').value = viewSettings.imageWidth;
+            document.getElementById('image-width-output').textContent = `${viewSettings.imageWidth} %`;
+            document.getElementById('image-height').value = viewSettings.imageHeight;
+            document.getElementById('image-height-output').textContent = `${viewSettings.imageHeight} px`;
+            document.getElementById('image-fit').value = viewSettings.imageFit;
+        }
+
+        function setViewPanelOpen(isOpen, moveFocus = true) {
+            viewPanel.hidden = !isOpen;
+            viewToggle.setAttribute('aria-expanded', String(isOpen));
+            if (moveFocus) {
+                (isOpen ? document.getElementById('close-view-panel') : viewToggle).focus();
+            }
+        }
+
+        viewToggle.addEventListener('click', () => setViewPanelOpen(viewPanel.hidden));
+        document.getElementById('image-adjust-btn').addEventListener('click', () => {
+            setViewPanelOpen(true, false);
+            document.getElementById('image-width').focus();
+        });
+        document.getElementById('close-view-panel').addEventListener('click', () => setViewPanelOpen(false));
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !viewPanel.hidden) setViewPanelOpen(false);
+        });
+        document.addEventListener('pointerdown', event => {
+            if (!viewPanel.hidden && !viewPanel.contains(event.target) &&
+                !viewToggle.contains(event.target) &&
+                !document.getElementById('image-adjust-btn').contains(event.target) &&
+                !imageResizeHandle.contains(event.target)) {
+                setViewPanelOpen(false, false);
+            }
+        });
+
+        const rangeSettings = { 'column-width': 'column', 'image-width': 'imageWidth', 'image-height': 'imageHeight' };
+        Object.entries(rangeSettings).forEach(([id, key]) => {
+            const input = document.getElementById(id);
+            input.addEventListener('input', () => {
+                viewSettings[key] = Number(input.value);
+                applyViewSettings();
+            });
+        });
+        document.getElementById('image-fit').addEventListener('change', event => {
+            viewSettings.imageFit = event.target.value;
+            applyViewSettings();
+        });
+        document.getElementById('reset-view-btn').addEventListener('click', () => {
+            Object.assign(viewSettings, defaultView);
+            applyViewSettings();
+        });
+
+        function updateResponsiveControls() {
+            const singleColumn = window.matchMedia('(max-width: 992px)').matches;
+            document.getElementById('column-width').disabled = singleColumn;
+            document.getElementById('column-width-hint').textContent = singleColumn
+                ? 'En esta pantalla las tarjetas se muestran en una columna.'
+                : 'Espacio para el reloj, la imagen y las indicaciones.';
+        }
+        window.addEventListener('resize', updateResponsiveControls);
+        updateResponsiveControls();
+        applyViewSettings();
+
+        function setImageSize(widthPercent, heightPixels) {
+            viewSettings.imageWidth = Math.round(Math.max(40, Math.min(100, widthPercent)));
+            viewSettings.imageHeight = Math.round(Math.max(160, Math.min(640, heightPixels)) / 10) * 10;
+            applyViewSettings();
+        }
+
+        imageResizeHandle.addEventListener('pointerdown', event => {
+            if (!selectedImage || event.button !== 0) return;
+            const card = document.getElementById('projection-image-card');
+            const availableWidth = card.parentElement.getBoundingClientRect().width;
+            if (!availableWidth) return;
+            event.preventDefault();
+            imageResize = {
+                pointerId: event.pointerId,
+                x: event.clientX,
+                y: event.clientY,
+                width: card.getBoundingClientRect().width,
+                height: document.getElementById('projection-image-frame').getBoundingClientRect().height,
+                availableWidth
+            };
+            imageResizeHandle.setPointerCapture(event.pointerId);
+            body.classList.add('is-resizing-image');
+        });
+        imageResizeHandle.addEventListener('pointermove', event => {
+            if (!imageResize || event.pointerId !== imageResize.pointerId) return;
+            setImageSize(
+                (imageResize.width + event.clientX - imageResize.x) / imageResize.availableWidth * 100,
+                imageResize.height + event.clientY - imageResize.y
+            );
+        });
+        function finishImageResize() {
+            if (imageResize) {
+                const pointerId = imageResize.pointerId;
+                imageResize = null;
+                if (imageResizeHandle.hasPointerCapture(pointerId)) imageResizeHandle.releasePointerCapture(pointerId);
+            }
+            body.classList.remove('is-resizing-image');
+        }
+        ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(eventName => {
+            imageResizeHandle.addEventListener(eventName, event => {
+                if (imageResize && event.pointerId === imageResize.pointerId) finishImageResize();
+            });
+        });
+        imageResizeHandle.addEventListener('keydown', event => {
+            if (!selectedImage || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
+            event.preventDefault();
+            const widthChange = event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : 0;
+            const heightChange = event.key === 'ArrowUp' ? -10 : event.key === 'ArrowDown' ? 10 : 0;
+            setImageSize(viewSettings.imageWidth + widthChange, viewSettings.imageHeight + heightChange);
+        });
+
         // --- HORA LOCAL DE LA COMPUTADORA ---
         function getRealNow() {
             return new Date(); // Confiamos plenamente en el reloj del sistema operativo
@@ -558,6 +990,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             }
 
             // Cambiar pantallas
+            setViewPanelOpen(false, false);
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('display-screen').style.display = 'block';
             
@@ -570,6 +1003,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
 
         function editConfig() {
             clearInterval(interval);
+            setViewPanelOpen(false, false);
             document.getElementById('display-screen').style.display = 'none';
             document.getElementById('setup-screen').style.display = 'block';
 
