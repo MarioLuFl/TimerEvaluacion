@@ -205,75 +205,6 @@
         .image-status { margin: 10px 0 0; font-size: 0.85em; color: var(--text-secondary); }
         .image-status.is-error { color: var(--timer-color); }
 
-        /* --- TARJETA DE IMAGEN EN LA PROYECCIÓN --- */
-        .image-card {
-            width: var(--image-card-width, 100%);
-            height: var(--image-card-height, 100%);
-            max-width: 100%;
-            max-height: 100%;
-            min-width: 0;
-            min-height: 0;
-            align-self: center;
-            justify-self: center;
-            display: grid;
-            grid-template-rows: auto minmax(0, 1fr);
-            padding: 15px;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        .image-card-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.85em; font-weight: 600; }
-        .image-card-header .btn-secondary { padding: 5px 9px; font-size: 0.85em; }
-        .image-frame { position: relative; min-width: 0; min-height: 0; overflow: hidden; border-radius: 10px; }
-        .image-frame img { display: block; width: 100%; height: 100%; object-fit: var(--image-fit, contain); object-position: center; }
-        .image-resize-handle {
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            width: 32px;
-            height: 32px;
-            padding: 0;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            background: var(--card-bg);
-            color: var(--accent);
-            cursor: nwse-resize;
-            touch-action: none;
-            font-size: 1.3em;
-            opacity: 0.55;
-        }
-        .image-card:hover .image-resize-handle, .image-resize-handle:focus-visible { opacity: 1; }
-        body.is-resizing-image { cursor: nwse-resize; user-select: none; }
-
-        /* --- AJUSTES EN TIEMPO REAL --- */
-        .view-panel {
-            position: fixed;
-            right: 20px;
-            top: 74px;
-            width: 330px;
-            max-width: calc(100vw - 24px);
-            max-height: calc(100vh - 110px);
-            overflow-y: auto;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            background: var(--card-bg);
-            box-shadow: var(--shadow);
-            z-index: 1100;
-        }
-        .view-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
-        .view-panel-header h2 { margin: 0; font-size: 1em; }
-        .close-panel-btn { border: 0; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 1.5em; padding: 0 5px; }
-        .view-control { margin-bottom: 18px; }
-        .view-control label { display: flex; justify-content: space-between; gap: 10px; text-transform: none; letter-spacing: 0; font-size: 0.85em; }
-        .view-control output { color: var(--accent); white-space: nowrap; }
-        .view-control input[type="range"] { padding: 0; border: 0; height: 22px; cursor: pointer; accent-color: var(--accent); }
-        .view-control input:disabled { opacity: 0.5; cursor: default; }
-        .view-control select { padding: 10px; font-size: 0.85em; }
-        .image-view-controls { padding-top: 18px; border-top: 1px solid var(--border-color); }
-        .view-panel .panel-reset { width: 100%; }
-
         .btn-start {
             background-color: var(--accent);
             color: #ffffff;
@@ -294,163 +225,108 @@
             transform: translateY(-2px);
         }
 
-        /* --- PANEL LATERAL Y ESCENARIO AJUSTADO A LA PANTALLA --- */
-        .dashboard-workspace {
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) clamp(270px, 22vw, 340px);
-            gap: 18px;
-            min-width: 0;
-            min-height: 0;
-            position: relative;
-        }
-        .dashboard-workspace[data-sidebar-open="false"] { grid-template-columns: minmax(0, 1fr); }
-        .projection-main {
-            display: grid;
-            grid-template-rows: minmax(0, 1fr) auto;
-            gap: 14px;
-            min-width: 0;
-            min-height: 0;
-            container-type: inline-size;
-        }
-        .projection-grid {
-            display: grid;
-            grid-template-columns: minmax(0, var(--timer-column-size, 40fr)) minmax(0, var(--image-column-size, 60fr));
-            grid-template-rows: minmax(0, 1fr);
-            gap: 16px;
-            min-width: 0;
-            min-height: 0;
-        }
-        .projection-grid[data-has-image="false"] { grid-template-columns: minmax(0, 1fr); }
-        .image-slot { display: grid; grid-template-rows: minmax(0, 1fr); min-width: 0; min-height: 0; }
-        .data-sidebar {
-            min-width: 0;
-            min-height: 0;
-            padding: 18px;
-            border: 1px solid var(--border-color);
-            border-radius: 15px;
-            background: var(--bg-color);
-            overflow-y: auto;
-        }
-        .data-sidebar-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
-        .data-sidebar-header h2 { margin: 0; font-size: 1em; }
-        .sidebar-backdrop { display: none; }
+        /* Tarjetas libres: las coordenadas se guardan como proporciones de la pantalla. */
+        #display-screen { grid-template-rows: auto auto minmax(0, 1fr); gap: 8px; }
+        .projection-toolbar { flex-wrap: wrap; }
+        .projection-tools { flex-wrap: wrap; justify-content: flex-end; }
+        .projection-tools button { font-family: inherit; }
+        .projection-tools button[aria-pressed="true"] { background: var(--text-main); color: var(--card-bg); opacity: 1; }
+        .projection-tools button:disabled { opacity: 0.3; cursor: default; }
+        .layout-hint { min-height: 24px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; color: var(--text-secondary); font-size: 0.78rem; padding: 0 9px; }
+        #layout-notice { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); max-width: 85vw; padding: 9px 14px; border: 1px solid var(--accent); border-radius: 10px; background: var(--card-bg); color: var(--accent); font-weight: 600; box-shadow: var(--shadow); z-index: 120; pointer-events: none; }
+        #layout-notice:empty { display: none; }
+        .dashboard-workspace { min-height: 0; min-width: 0; padding: 9px; overflow: hidden; }
+        .layout-board { height: 100%; width: 100%; min-height: 0; min-width: 0; position: relative; isolation: isolate; }
+        .layout-board[data-editing="true"] { background-image: radial-gradient(var(--border-color) 1px, transparent 1px); background-size: 18px 18px; }
+        .layout-card { position: absolute; display: grid; grid-template-rows: auto minmax(0, 1fr); border: 1px solid var(--border-color); border-radius: 15px; background: var(--bg-color); min-width: 0; min-height: 0; box-shadow: var(--shadow); }
+        .layout-card.is-selected { border-color: var(--accent); outline: 1px solid var(--accent); }
+        .layout-card.is-moving { z-index: 50; opacity: 0.85; box-shadow: 0 18px 50px rgba(0,0,0,0.3); }
+        .card-header { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px 9px; min-height: 34px; border-bottom: 1px solid var(--border-color); border-radius: 14px 14px 0 0; background: var(--card-bg); }
+        .card-drag-handle { display: flex; align-items: center; gap: 7px; flex: 1; min-width: 0; border: 0; background: transparent; color: var(--text-secondary); text-align: left; padding: 3px 0; font: 600 0.8rem 'Poppins', 'Segoe UI', sans-serif; cursor: grab; touch-action: none; }
+        .card-drag-handle span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .drag-icon { font-size: 1.1rem; color: var(--accent); }
+        .card-text-tools { display: flex; align-items: center; gap: 3px; }
+        .card-text-tools button, .card-close { border: 0; border-radius: 6px; background: transparent; color: var(--text-secondary); cursor: pointer; font: 600 0.75rem 'Poppins', 'Segoe UI', sans-serif; padding: 4px 5px; }
+        .card-text-tools button:hover, .card-close:hover { background: var(--border-color); color: var(--accent); }
+        .card-text-tools output { font-size: 0.68rem; min-width: 33px; text-align: center; color: var(--text-secondary); }
+        .card-close { font-size: 1.2rem; line-height: 1; }
+        .card-body { min-width: 0; min-height: 0; border-radius: 0 0 14px 14px; }
+        .layout-board[data-editing="false"] .card-header { display: none; }
+        .layout-board[data-editing="false"] .layout-card { grid-template-rows: minmax(0, 1fr); }
+        .layout-board[data-editing="false"] .card-body { border-radius: 14px; }
+        .resize-handle { position: absolute; width: 12px; height: 12px; padding: 0; border: 2px solid var(--accent); border-radius: 2px; background: var(--card-bg); transform: translate(-50%, -50%); display: none; z-index: 60; touch-action: none; }
+        .resize-handle::before { content: ''; position: absolute; inset: -7px; }
+        .layout-board[data-editing="true"] .layout-card.is-selected .resize-handle { display: block; }
+        .resize-handle[data-direction="nw"] { left: 0; top: 0; cursor: nwse-resize; }
+        .resize-handle[data-direction="n"] { left: 50%; top: 0; cursor: ns-resize; }
+        .resize-handle[data-direction="ne"] { left: 100%; top: 0; cursor: nesw-resize; }
+        .resize-handle[data-direction="e"] { left: 100%; top: 50%; cursor: ew-resize; }
+        .resize-handle[data-direction="se"] { left: 100%; top: 100%; cursor: nwse-resize; }
+        .resize-handle[data-direction="s"] { left: 50%; top: 100%; cursor: ns-resize; }
+        .resize-handle[data-direction="sw"] { left: 0; top: 100%; cursor: nesw-resize; }
+        .resize-handle[data-direction="w"] { left: 0; top: 50%; cursor: ew-resize; }
+        body.is-arranging { user-select: none; }
+        body.is-arranging .card-drag-handle { cursor: grabbing; }
+        .alignment-guide { position: absolute; background: var(--accent); z-index: 80; pointer-events: none; opacity: 0.85; }
+        .alignment-guide.vertical { width: 1px; top: 0; bottom: 0; }
+        .alignment-guide.horizontal { height: 1px; left: 0; right: 0; }
+        .drop-preview { position: absolute; border: 2px dashed var(--accent); border-radius: 15px; background: color-mix(in srgb, var(--accent) 15%, transparent); z-index: 70; pointer-events: none; display: grid; place-items: center; }
+        .drop-preview span { background: var(--card-bg); border: 1px solid var(--accent); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; color: var(--accent); font-weight: 600; }
 
-        .eval-header { border-bottom: 2px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px; text-align: left; }
-        .eval-title { font-size: 1.25em; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1.3; overflow-wrap: anywhere; }
-        .eval-type-badge {
-            display: inline-block; background-color: var(--accent); color: white;
-            padding: 5px 15px; border-radius: 50px; font-size: 0.85em; font-weight: 600; text-transform: uppercase; margin-top: 10px;
-        }
-
-        .info-vertical-stack { display: flex; flex-direction: column; gap: 10px; text-align: left; }
-        .info-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-        .info-item { background-color: var(--card-bg); padding: 10px 12px; border-radius: 10px; border-left: 4px solid var(--border-color); }
-        .info-item.accent-border { border-left-color: var(--accent); }
-        .info-label { font-size: 0.75em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        .info-value { font-size: 0.95em; font-weight: 600; color: var(--text-main); overflow-wrap: anywhere; }
-
-        /* Contenedor del Temporizador y Reloj Oficial */
-        .timer-container {
-            container-type: size;
-            min-width: 0;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            background-color: var(--bg-color);
-            border-radius: 15px;
-            padding: 20px 12px;
-            text-align: center;
-            overflow: hidden;
-        }
-        .timer-label { font-size: clamp(0.8rem, 1.4vw, 1.3rem); color: var(--text-secondary); font-weight: 600; letter-spacing: 2px; margin-bottom: 14px; }
-        .timer {
-            /* Ocho caracteres de ancho fijo: los segundos no alteran la distribución. */
-            font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Liberation Mono', monospace;
-            font-size: clamp(2rem, 8vw, 9.5rem);
-            width: 8ch;
-            margin-inline: auto;
-            white-space: nowrap;
-            font-weight: 700; color: var(--timer-color); line-height: 0.9;
-            font-variant-numeric: tabular-nums; text-shadow: 0 0 20px rgba(214, 48, 49, 0.15);
-        }
-        /* Escala con el ancho disponible dentro de la tarjeta. */
-        @supports (font-size: 1cqw) {
-            .timer { font-size: min(13rem, 19cqw, 44cqh); }
-        }
-        [data-theme="dark"] .timer { text-shadow: 0 0 30px rgba(255, 118, 117, 0.4); }
-
-        .real-clock-box {
-            font-size: clamp(0.85rem, 1.5vw, 1.45rem);
-            color: var(--text-secondary);
-            margin-top: 18px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            border-top: 1px dashed var(--border-color);
-            padding-top: 15px;
-        }
-        .real-clock-val {
-            letter-spacing: normal;
-            display: inline-block;
-            width: 8ch;
-            white-space: nowrap;
-            font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Liberation Mono', monospace;
-            color: var(--accent);
-            font-variant-numeric: tabular-nums;
-        }
-
+        .timer-container { display: flex; flex-direction: column; justify-content: center; align-items: stretch; padding: 14px 12px; text-align: center; overflow: hidden; }
+        .timer-label { color: var(--text-secondary); font-weight: 600; letter-spacing: 2px; margin-bottom: 10px; font-size: 1rem; }
+        .timer { font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Liberation Mono', monospace; font-size: 80px; font-weight: 700; color: var(--timer-color); white-space: nowrap; line-height: 1; font-variant-numeric: tabular-nums; text-shadow: 0 0 20px rgba(214,48,49,0.15); }
+        [data-theme="dark"] .timer { text-shadow: 0 0 30px rgba(255,118,117,0.3); }
+        .real-clock-box { color: var(--text-secondary); margin-top: 12px; border-top: 1px dashed var(--border-color); padding-top: 10px; font-weight: 700; white-space: nowrap; }
+        .real-clock-val { font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Liberation Mono', monospace; color: var(--accent); display: inline-block; width: 8ch; white-space: nowrap; font-variant-numeric: tabular-nums; }
         .time-up { animation: blink-red 1s infinite; }
         @keyframes blink-red { 50% { opacity: 0.5; color: var(--text-main); text-shadow: none; } }
-
-        .instructions-container {
-            background-color: var(--warn-bg); border: 2px solid var(--warn-border);
-            border-radius: 15px; padding: 16px 20px; text-align: left; box-shadow: var(--shadow);
-            min-height: 0; max-height: 40vh; max-height: 40dvh; overflow-y: auto;
-        }
-        .instructions-title { font-size: 1rem; font-weight: 700; color: var(--timer-color); letter-spacing: 0.5px; margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        .instructions-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 30px; margin: 0; padding-left: 20px; font-size: clamp(0.9rem, 1.2vw, 1.1rem); line-height: 1.45; font-weight: 600; color: var(--text-main); }
+        .image-frame { overflow: hidden; padding: 10px; }
+        .image-frame img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; user-select: none; }
+        .instructions-container { background: var(--warn-bg); border: 2px solid var(--warn-border); }
+        .instructions-body { padding: 14px 18px; overflow-y: auto; container: instructions / inline-size; }
+        .instructions-title { font-size: 1rem; color: var(--timer-color); font-weight: 700; margin: 0 0 10px; letter-spacing: 0.3px; }
+        .instructions-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px 26px; margin: 0; padding-left: 22px; font-size: 18px; line-height: 1.4; font-weight: 600; }
         .instructions-list li { margin: 0; overflow-wrap: anywhere; }
+        @container instructions (max-width: 620px) { .instructions-list { grid-template-columns: minmax(0,1fr); } }
+        .data-body { overflow-y: auto; padding: 14px 16px; font-size: calc(1rem * var(--data-text-scale,1)); }
+        .eval-header { border-bottom: 2px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px; }
+        .eval-title { font-size: 1.25em; font-weight: 700; line-height: 1.3; margin: 0; overflow-wrap: anywhere; }
+        .eval-type-badge { display: inline-block; background: var(--accent); color: white; padding: 5px 12px; border-radius: 30px; font-size: 0.85em; font-weight: 600; text-transform: uppercase; margin-top: 10px; }
+        .info-vertical-stack { display: flex; flex-direction: column; gap: 10px; }
+        .info-row { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+        .info-item { background: var(--card-bg); padding: 10px 12px; border-radius: 10px; border-left: 4px solid var(--border-color); }
+        .info-item.accent-border { border-left-color: var(--accent); }
+        .info-label { font-size: 0.75em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .info-value { font-size: 0.95em; font-weight: 600; overflow-wrap: anywhere; }
 
-        @container (max-width: 760px) {
-            .instructions-list { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 900px) {
-            .container { padding: 30px; }
-            .dashboard-workspace { grid-template-columns: minmax(0, 1fr); }
-            .data-sidebar { position: absolute; right: 0; top: 0; bottom: 0; width: min(340px, 90%); z-index: 25; background: var(--card-bg); box-shadow: var(--shadow); }
-            .sidebar-backdrop { display: block; position: absolute; inset: 0; border: 0; background: rgba(0, 0, 0, 0.4); z-index: 24; cursor: pointer; }
-        }
         @media (max-width: 800px) {
             .projection-toolbar { padding-right: 48px; gap: 6px; }
-            .projection-toolbar > button { font-size: 0.8em; padding: 8px; }
+            .projection-toolbar > button, .projection-tools button { padding: 8px; font-size: 0.8rem; }
             .projection-tools { gap: 5px; }
-            .projection-tools button { font-size: 0.8em; padding: 8px; }
             .toolbar-label { display: none; }
             body.is-projecting #theme-toggle { padding: 8px; }
             body.is-projecting #theme-text { display: none; }
-        }
-        @media (max-width: 700px) {
-            #display-screen { padding: 12px; gap: 10px; }
-            .projection-main { gap: 10px; }
-            .projection-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 40fr) minmax(0, 60fr); gap: 10px; }
-            .projection-grid[data-has-image="false"] { grid-template-rows: minmax(0, 1fr); }
-            .timer-container { padding: 10px 12px; }
-            .timer-label { margin-bottom: 8px; }
-            .real-clock-box { margin-top: 10px; padding-top: 8px; }
-            .instructions-container { padding: 12px 16px; }
-            .instructions-list { grid-template-columns: 1fr; }
-            body.is-projecting #theme-toggle { top: 12px; right: 12px; padding: 8px; }
+            .layout-hint { font-size: 0.7rem; }
         }
         @media (max-width: 600px) {
             .form-grid { grid-template-columns: 1fr; }
             .full-width { grid-column: span 1; }
             .container { padding: 20px; }
-            h1 { font-size: 1.6em; }
+            h1 { font-size: 1.6rem; }
             .image-preview { grid-template-columns: 1fr; }
             .image-preview img { height: 150px; }
-            .view-panel { right: 12px; top: 65px; }
-            .image-card-header { flex-wrap: wrap; }
+            #display-screen { padding: 10px; gap: 5px; }
+            body.is-projecting #theme-toggle { top: 10px; right: 10px; }
+            .card-header { padding: 3px 6px; }
+            .card-drag-handle { font-size: 0.72rem; gap: 4px; }
+            .card-text-tools output { display: none; }
+            .instructions-body { padding: 10px 12px; }
+            .instructions-title { font-size: 0.8rem; }
+            .timer-container { padding: 8px; }
         }
+        @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
     </style>
 </head>
 <body data-theme="dark">
@@ -541,7 +417,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                     <span class="upload-icon" aria-hidden="true">🖼️</span>
                     <p>Arrastra una imagen aquí</p>
                     <button type="button" class="btn-secondary" id="choose-image-btn">Seleccionar imagen</button>
-                    <p class="field-hint">Se mostrará junto al reloj. Podrás ajustar su tamaño durante la proyección.</p>
+                    <p class="field-hint">Se mostrará en una tarjeta que puedes mover y redimensionar desde sus bordes y esquinas.</p>
                 </div>
                 <div class="image-preview" id="image-preview-box" hidden>
                     <img id="image-preview" alt="Vista previa de la imagen seleccionada">
@@ -562,118 +438,85 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
         <div class="projection-toolbar">
             <button type="button" class="btn-secondary" id="data-sidebar-toggle" aria-expanded="true" aria-controls="data-sidebar">◀ Ocultar datos</button>
             <div class="projection-tools">
-                <button type="button" id="view-toggle" aria-label="Ajustar vista" aria-expanded="false" aria-controls="view-panel">↔ <span class="toolbar-label">Ajustar vista</span></button>
+                <button type="button" id="layout-lock-btn" aria-pressed="false" title="Fijar diseño y ocultar los tiradores"><span id="layout-lock-icon">🔓</span> <span class="toolbar-label" id="layout-lock-label">Fijar diseño</span></button>
+                <button type="button" id="undo-layout-btn" title="Deshacer cambio (Ctrl+Z)" aria-label="Deshacer cambio de diseño" disabled>↶ <span class="toolbar-label">Deshacer</span></button>
+                <button type="button" id="reset-layout-btn" title="Restablecer la distribución actual" aria-label="Restablecer distribución">⟲ <span class="toolbar-label">Restablecer</span></button>
                 <button type="button" id="fullscreen-btn" aria-label="Abrir pantalla completa" title="Pantalla completa">⛶ <span class="toolbar-label" id="fullscreen-label">Pantalla completa</span></button>
                 <button type="button" id="edit-btn" aria-label="Editar datos" onclick="editConfig()">⚙️ <span class="toolbar-label">Editar datos</span></button>
             </div>
         </div>
-
-        <div class="dashboard-workspace" id="dashboard-workspace" data-sidebar-open="true">
-            <main class="projection-main" id="projection-main">
-                <div class="projection-grid" id="projection-grid" data-has-image="false">
-                <div class="timer-container" id="timer-card">
-                    <div class="timer-label">TIEMPO RESTANTE</div>
-                    <div class="timer" id="time-remaining">00:00:00</div>
-                    
-                    <div class="real-clock-box">
-                        Hora Actual: <span id="real-time-clock" class="real-clock-val">00:00:00</span>
+        <div class="layout-hint">
+            <span id="layout-help">Selecciona una tarjeta. Arrastra su encabezado para moverla y sus tiradores para cambiar el tamaño.</span>
+            <span id="layout-notice" role="status" aria-live="polite"></span>
+        </div>
+        <div class="dashboard-workspace" id="dashboard-workspace">
+            <main class="layout-board" id="layout-board" data-editing="true" aria-label="Área de proyección con tarjetas movibles">
+                <section class="layout-card" id="timer-card" data-card="timer" aria-label="Temporizador">
+                    <div class="card-header">
+                        <button type="button" class="card-drag-handle" aria-label="Mover temporizador. Usa las flechas del teclado para mover la tarjeta."><span class="drag-icon" aria-hidden="true">⠿</span><span>Temporizador</span></button>
                     </div>
-                </div>
-                <div class="image-slot" id="projection-image-slot" hidden>
-                <section class="image-card" id="projection-image-card" aria-label="Imagen de apoyo" hidden>
-                    <div class="image-card-header">
-                        <span>Imagen de apoyo</span>
-                        <button type="button" class="btn-secondary" id="image-adjust-btn">↔ Ajustar</button>
+                    <div class="card-body timer-container" id="timer-body">
+                        <div class="timer-label" id="timer-label">TIEMPO RESTANTE</div>
+                        <div class="timer" id="time-remaining">00:00:00</div>
+                        <div class="real-clock-box" id="real-clock-box">Hora actual: <span id="real-time-clock" class="real-clock-val">00:00:00</span></div>
                     </div>
-                    <div class="image-frame" id="projection-image-frame">
+                </section>
+                <section class="layout-card" id="projection-image-card" data-card="image" aria-label="Imagen de apoyo" hidden>
+                    <div class="card-header">
+                        <button type="button" class="card-drag-handle" aria-label="Mover imagen. Usa las flechas del teclado para mover la tarjeta."><span class="drag-icon" aria-hidden="true">⠿</span><span>Imagen</span></button>
+                    </div>
+                    <div class="card-body image-frame">
                         <img id="projection-image" alt="Imagen de apoyo para la evaluación" draggable="false">
-                        <button type="button" class="image-resize-handle" id="image-resize-handle" title="Arrastra para cambiar el tamaño" aria-label="Redimensionar imagen. También puedes usar las flechas del teclado.">↘</button>
                     </div>
                 </section>
-                </div>
-                </div>
-                <section class="instructions-container" id="instructions-box" aria-labelledby="instructions-title">
-                    <h2 class="instructions-title" id="instructions-title">🚨 INDICACIONES DE LA EVALUACIÓN</h2>
-                    <ul class="instructions-list" id="disp-instructions"></ul>
+                <section class="layout-card instructions-container" id="instructions-box" data-card="instructions" aria-labelledby="instructions-title">
+                    <div class="card-header">
+                        <button type="button" class="card-drag-handle" aria-label="Mover indicaciones. Usa las flechas del teclado para mover la tarjeta."><span class="drag-icon" aria-hidden="true">⠿</span><span>Indicaciones</span></button>
+                        <div class="card-text-tools" aria-label="Tamaño del texto de las indicaciones">
+                            <button type="button" data-font-card="instructions" data-font-step="-10" title="Reducir texto" aria-label="Reducir texto de las indicaciones">A−</button>
+                            <output id="instructions-font-output">100 %</output>
+                            <button type="button" data-font-card="instructions" data-font-step="10" title="Ampliar texto" aria-label="Ampliar texto de las indicaciones">A+</button>
+                        </div>
+                    </div>
+                    <div class="card-body instructions-body" id="instructions-body">
+                        <h2 class="instructions-title" id="instructions-title">🚨 INDICACIONES DE LA EVALUACIÓN</h2>
+                        <ul class="instructions-list" id="disp-instructions"></ul>
+                    </div>
                 </section>
+                <aside class="layout-card data-sidebar" id="data-sidebar" data-card="data" aria-label="Datos de la evaluación">
+                    <div class="card-header">
+                        <button type="button" class="card-drag-handle" aria-label="Mover datos. Usa las flechas del teclado para mover la tarjeta."><span class="drag-icon" aria-hidden="true">⠿</span><span>Datos</span></button>
+                        <div class="card-text-tools" aria-label="Tamaño del texto de los datos">
+                            <button type="button" data-font-card="data" data-font-step="-10" title="Reducir texto" aria-label="Reducir texto de los datos">A−</button>
+                            <output id="data-font-output">100 %</output>
+                            <button type="button" data-font-card="data" data-font-step="10" title="Ampliar texto" aria-label="Ampliar texto de los datos">A+</button>
+                        </div>
+                        <button type="button" class="card-close" id="close-data-sidebar" aria-label="Ocultar datos">×</button>
+                    </div>
+                    <div class="card-body data-body" id="data-body">
+                        <div class="eval-header">
+                            <div class="eval-title" id="disp-course"></div>
+                            <div class="eval-type-badge" id="disp-eval-type"></div>
+                        </div>
+                        <div class="info-vertical-stack">
+                            <div class="info-item"><div class="info-label">Código</div><div class="info-value" id="disp-code"></div></div>
+                            <div class="info-row" id="data-info-row">
+                                <div class="info-item"><div class="info-label" id="disp-group-label">NRC</div><div class="info-value" id="disp-group"></div></div>
+                                <div class="info-item"><div class="info-label">Aula</div><div class="info-value" id="disp-classroom"></div></div>
+                            </div>
+                            <div class="info-item"><div class="info-label">Profesor</div><div class="info-value" id="disp-prof"></div></div>
+                            <div class="info-item accent-border"><div class="info-label">Fecha</div><div class="info-value" id="disp-date"></div></div>
+                            <div class="info-item"><div class="info-label">Hora de inicio</div><div class="info-value" id="disp-start"></div></div>
+                            <div class="info-item accent-border"><div class="info-label">Hora de fin</div><div class="info-value" id="disp-end"></div></div>
+                        </div>
+                    </div>
+                </aside>
+                <div class="alignment-guide vertical" id="guide-x" hidden></div>
+                <div class="alignment-guide horizontal" id="guide-y" hidden></div>
+                <div class="drop-preview" id="drop-preview" hidden><span id="drop-preview-label"></span></div>
             </main>
-
-            <button type="button" class="sidebar-backdrop" id="data-sidebar-backdrop" aria-label="Ocultar datos del curso" hidden></button>
-            <aside class="data-sidebar" id="data-sidebar" aria-labelledby="data-sidebar-title">
-                <div class="data-sidebar-header">
-                    <h2 id="data-sidebar-title">Datos de la evaluación</h2>
-                    <button type="button" class="close-panel-btn" id="close-data-sidebar" aria-label="Ocultar datos del curso">×</button>
-                </div>
-                <div class="eval-header">
-                    <div class="eval-title" id="disp-course"></div>
-                    <div class="eval-type-badge" id="disp-eval-type"></div>
-                </div>
-                <div class="info-vertical-stack">
-                    <div class="info-item">
-                        <div class="info-label">Código</div>
-                        <div class="info-value" id="disp-code"></div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-item">
-                            <div class="info-label" id="disp-group-label">NRC</div>
-                            <div class="info-value" id="disp-group"></div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label">Aula</div>
-                            <div class="info-value" id="disp-classroom"></div>
-                        </div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Profesor</div>
-                        <div class="info-value" id="disp-prof"></div>
-                    </div>
-                    <div class="info-item accent-border">
-                        <div class="info-label">Fecha</div>
-                        <div class="info-value" id="disp-date"></div>
-                    </div>
-                    <div class="info-item">
-                        <div class="info-label">Hora Inicio</div>
-                        <div class="info-value" id="disp-start"></div>
-                    </div>
-                    <div class="info-item accent-border">
-                        <div class="info-label">Hora Fin</div>
-                        <div class="info-value" id="disp-end"></div>
-                    </div>
-                </div>
-            </aside>
         </div>
     </div>
-
-    <aside class="view-panel" id="view-panel" aria-labelledby="view-panel-title" hidden>
-        <div class="view-panel-header">
-            <h2 id="view-panel-title">Ajustar vista</h2>
-            <button type="button" class="close-panel-btn" id="close-view-panel" aria-label="Cerrar ajustes">×</button>
-        </div>
-        <div class="view-control">
-            <label for="column-width">Espacio del temporizador <output id="column-width-output" for="column-width">40 %</output></label>
-            <input type="range" id="column-width" min="30" max="60" step="1" value="40">
-            <p class="field-hint" id="column-width-hint">El resto del espacio queda para la imagen.</p>
-        </div>
-        <div class="image-view-controls" id="image-view-controls" hidden>
-            <div class="view-control">
-                <label for="image-width">Ancho de imagen <output id="image-width-output" for="image-width">100 %</output></label>
-                <input type="range" id="image-width" min="40" max="100" step="1" value="100">
-            </div>
-            <div class="view-control">
-                <label for="image-height">Alto de imagen <output id="image-height-output" for="image-height">100 %</output></label>
-                <input type="range" id="image-height" min="40" max="100" step="1" value="100">
-            </div>
-            <div class="view-control">
-                <label for="image-fit">Mostrar imagen</label>
-                <select id="image-fit">
-                    <option value="contain">Imagen completa</option>
-                    <option value="cover">Llenar tarjeta (recorta bordes)</option>
-                </select>
-                <p class="field-hint">El tamaño se ajusta al espacio disponible y mantiene visibles las indicaciones.</p>
-            </div>
-        </div>
-        <button type="button" class="btn-secondary panel-reset" id="reset-view-btn">Restablecer vista</button>
-    </aside>
 
     <script>
         let interval;
@@ -762,26 +605,24 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             }
         }
 
-        // --- DATOS EN UN PANEL LATERAL OCULTABLE ---
+        // --- TARJETA DE DATOS OCULTABLE; EL RESTO DEL DISEÑO SE AMPLÍA AL OCULTARLA ---
         const dataSidebar = document.getElementById('data-sidebar');
         const dataSidebarToggle = document.getElementById('data-sidebar-toggle');
         let dataSidebarOpen = true;
         let hasProjected = false;
 
         function setDataSidebarOpen(isOpen) {
+            finishInteraction(true);
             dataSidebarOpen = isOpen;
             dataSidebar.hidden = !isOpen;
-            document.getElementById('dashboard-workspace').setAttribute('data-sidebar-open', String(isOpen));
+            editorState.dataOpen = isOpen;
             dataSidebarToggle.setAttribute('aria-expanded', String(isOpen));
             dataSidebarToggle.textContent = isOpen ? '◀ Ocultar datos' : '☰ Mostrar datos';
-            document.getElementById('data-sidebar-backdrop').hidden =
-                !isOpen || !window.matchMedia('(max-width: 900px)').matches;
             if (!isOpen && dataSidebar.contains(document.activeElement)) dataSidebarToggle.focus();
+            refreshBoard();
         }
-
         dataSidebarToggle.addEventListener('click', () => setDataSidebarOpen(!dataSidebarOpen));
         document.getElementById('close-data-sidebar').addEventListener('click', () => setDataSidebarOpen(false));
-        document.getElementById('data-sidebar-backdrop').addEventListener('click', () => setDataSidebarOpen(false));
 
         // La pantalla completa usa la misma distribución y conserva el tiempo de fin.
         const fullscreenButton = document.getElementById('fullscreen-btn');
@@ -820,9 +661,6 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             const hasImage = Boolean(selectedImage);
             document.getElementById('image-preview-box').hidden = !hasImage;
             document.getElementById('projection-image-card').hidden = !hasImage;
-            document.getElementById('projection-image-slot').hidden = !hasImage;
-            document.getElementById('projection-grid').setAttribute('data-has-image', String(hasImage));
-            document.getElementById('image-view-controls').hidden = !hasImage;
             const preview = document.getElementById('image-preview');
             const projection = document.getElementById('projection-image');
 
@@ -837,7 +675,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                 document.getElementById('image-file-name').textContent = '';
                 document.getElementById('image-file-details').textContent = '';
             }
-            updateResponsiveControls();
+            refreshBoard();
         }
 
         function loadImageFile(file) {
@@ -886,7 +724,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             pendingImageUrl = null;
             selectedImage = null;
             imageUpload.value = '';
-            finishImageResize();
+            finishInteraction(true);
             syncImageUI();
             setImageStatus('');
         }
@@ -922,143 +760,400 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             });
         });
 
-        // --- DISTRIBUCIÓN E IMAGEN AJUSTABLES SIN REINICIAR EL RELOJ ---
-        const defaultView = Object.freeze({ column: 40, imageWidth: 100, imageHeight: 100, imageFit: 'contain' });
-        const viewSettings = { ...defaultView };
-        const viewPanel = document.getElementById('view-panel');
-        const viewToggle = document.getElementById('view-toggle');
-        const imageResizeHandle = document.getElementById('image-resize-handle');
-        let imageResize = null;
+        // --- EDITOR DIRECTO DE TARJETAS: MOVER, REDIMENSIONAR Y GUARDAR ---
+        const board = document.getElementById('layout-board');
+        const cardElements = Object.fromEntries(Array.from(board.querySelectorAll('[data-card]')).map(el => [el.dataset.card, el]));
+        const cardNames = { timer: 'Temporizador', image: 'Imagen', instructions: 'Indicaciones', data: 'Datos' };
+        const storageKey = 'evaluation-free-layout-v1';
+        const editorState = { version: 1, profiles: {}, fonts: { instructions: 100, data: 100 }, locked: false, dataOpen: null };
+        try {
+            const previous = JSON.parse(localStorage.getItem('evaluation-sidebar-view'));
+            if (Number.isFinite(previous?.font)) editorState.fonts.data = Math.max(75, Math.min(220, previous.font));
+            const saved = JSON.parse(localStorage.getItem(storageKey));
+            if (saved?.version === 1) {
+                if (saved.profiles && typeof saved.profiles === 'object' && !Array.isArray(saved.profiles)) editorState.profiles = saved.profiles;
+                for (const key of ['instructions', 'data']) {
+                    if (Number.isFinite(saved.fonts?.[key])) editorState.fonts[key] = Math.max(75, Math.min(220, saved.fonts[key]));
+                }
+                editorState.locked = saved.locked === true;
+                if (typeof saved.dataOpen === 'boolean') editorState.dataOpen = saved.dataOpen;
+            }
+        } catch (_) { /* También funciona si el navegador bloquea el almacenamiento. */ }
 
-        function applyViewSettings() {
-            const grid = document.getElementById('projection-grid');
-            grid.style.setProperty('--timer-column-size', `${viewSettings.column}fr`);
-            grid.style.setProperty('--image-column-size', `${100 - viewSettings.column}fr`);
-            const card = document.getElementById('projection-image-card');
-            card.style.setProperty('--image-card-width', `${viewSettings.imageWidth}%`);
-            card.style.setProperty('--image-card-height', `${viewSettings.imageHeight}%`);
-            card.style.setProperty('--image-fit', viewSettings.imageFit);
-
-            document.getElementById('column-width').value = viewSettings.column;
-            document.getElementById('column-width-output').textContent = `${viewSettings.column} %`;
-            document.getElementById('image-width').value = viewSettings.imageWidth;
-            document.getElementById('image-width-output').textContent = `${viewSettings.imageWidth} %`;
-            document.getElementById('image-height').value = viewSettings.imageHeight;
-            document.getElementById('image-height-output').textContent = `${viewSettings.imageHeight} %`;
-            document.getElementById('image-fit').value = viewSettings.imageFit;
-        }
-
-        function setViewPanelOpen(isOpen, moveFocus = true) {
-            viewPanel.hidden = !isOpen;
-            viewToggle.setAttribute('aria-expanded', String(isOpen));
-            if (moveFocus) {
-                (isOpen ? document.getElementById('close-view-panel') : viewToggle).focus();
+        let currentLayout = {}, currentProfile = '', selectedCard = null, interaction = null;
+        let refreshFrame = 0, fitFrame = 0, noticeTimeout = 0;
+        const undoHistory = new Map(), redoHistory = new Map();
+        const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+        const copy = value => JSON.parse(JSON.stringify(value));
+        const directions = { nw: 'esquina superior izquierda', n: 'borde superior', ne: 'esquina superior derecha', e: 'borde derecho', se: 'esquina inferior derecha', s: 'borde inferior', sw: 'esquina inferior izquierda', w: 'borde izquierdo' };
+        for (const [id, card] of Object.entries(cardElements)) {
+            for (const [direction, label] of Object.entries(directions)) {
+                const handle = document.createElement('button');
+                handle.type = 'button';
+                handle.className = 'resize-handle';
+                handle.dataset.direction = direction;
+                handle.title = `Arrastra el ${label}. También puedes usar las flechas del teclado.`;
+                handle.setAttribute('aria-label', `Redimensionar ${cardNames[id]} desde el ${label}`);
+                card.appendChild(handle);
             }
         }
 
-        viewToggle.addEventListener('click', () => setViewPanelOpen(viewPanel.hidden));
-        document.getElementById('image-adjust-btn').addEventListener('click', () => {
-            setViewPanelOpen(true, false);
-            document.getElementById('image-width').focus();
+        function visibleCards() {
+            return ['timer', 'image', 'instructions', 'data'].filter(id => !cardElements[id].hidden);
+        }
+        function boardSize() { return { w: board.clientWidth, h: board.clientHeight }; }
+        function pixelRect(rect, size = boardSize()) { return { x: rect.x * size.w, y: rect.y * size.h, w: rect.w * size.w, h: rect.h * size.h }; }
+        function relativeRect(rect, size = boardSize()) {
+            return { x: rect.x / size.w, y: rect.y / size.h, w: rect.w / size.w, h: rect.h / size.h };
+        }
+        function overlaps(a, b, gap = 0) {
+            return a.x < b.x + b.w + gap - 0.01 && a.x + a.w > b.x - gap + 0.01 && a.y < b.y + b.h + gap - 0.01 && a.y + a.h > b.y - gap + 0.01;
+        }
+        function profileKey(size = boardSize()) {
+            return `${size.w / size.h < 1.15 ? 'vertical' : 'horizontal'}:d${+dataSidebarOpen}:i${+Boolean(selectedImage)}:n${+!cardElements.instructions.hidden}`;
+        }
+        function defaultLayout(size = boardSize()) {
+            const { w, h } = size, gap = Math.min(14, Math.max(6, Math.min(w, h) * 0.02));
+            const hasData = dataSidebarOpen, hasImage = Boolean(selectedImage), hasNotes = !cardElements.instructions.hidden;
+            const result = {};
+            if (w / h >= 1.15) {
+                const dataWidth = hasData ? Math.min(w * 0.4, clamp(w * 0.22, 270, 340)) : 0;
+                const mainWidth = w - (hasData ? dataWidth + gap : 0);
+                const notesHeight = hasNotes ? h * 0.29 : 0;
+                const topHeight = h - (hasNotes ? notesHeight + gap : 0);
+                const timerWidth = hasImage ? (mainWidth - gap) * 0.42 : mainWidth;
+                result.timer = { x: 0, y: 0, w: timerWidth, h: topHeight };
+                if (hasImage) result.image = { x: timerWidth + gap, y: 0, w: mainWidth - timerWidth - gap, h: topHeight };
+                if (hasNotes) result.instructions = { x: 0, y: h - notesHeight, w: mainWidth, h: notesHeight };
+                if (hasData) result.data = { x: w - dataWidth, y: 0, w: dataWidth, h };
+            } else {
+                const count = 1 + +hasImage + +hasNotes + +hasData;
+                const usableHeight = Math.max(1, h - gap * (count - 1));
+                const weights = { timer: hasImage ? 0.75 : 1.5, image: 1.25, instructions: 1, data: 1 };
+                const ids = visibleCards(), total = ids.reduce((sum, id) => sum + weights[id], 0);
+                let y = 0;
+                for (const id of ids) {
+                    const height = usableHeight * weights[id] / total;
+                    result[id] = { x: 0, y, w, h: height };
+                    y += height + gap;
+                }
+            }
+            return Object.fromEntries(Object.entries(result).map(([id, rect]) => [id, relativeRect(rect, size)]));
+        }
+        function validLayout(layout) {
+            const ids = visibleCards();
+            if (!layout || typeof layout !== 'object') return false;
+            for (const id of ids) {
+                const r = layout[id];
+                if (!r || !['x','y','w','h'].every(k => Number.isFinite(r[k])) || r.x < 0 || r.y < 0 || r.w <= 0 || r.h <= 0 || r.x + r.w > 1.0001 || r.y + r.h > 1.0001) return false;
+            }
+            for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+                const a = pixelRect(layout[ids[i]]), b = pixelRect(layout[ids[j]]);
+                if (overlaps(a, b)) return false;
+            }
+            return true;
+        }
+        function saveDesign() {
+            if (currentProfile) editorState.profiles[currentProfile] = copy(currentLayout);
+            try { localStorage.setItem(storageKey, JSON.stringify(editorState)); } catch (_) {}
+        }
+        function notifyLayout(message) {
+            clearTimeout(noticeTimeout);
+            document.getElementById('layout-notice').textContent = message;
+            noticeTimeout = setTimeout(() => { document.getElementById('layout-notice').textContent = ''; }, 4500);
+        }
+        function snapshot() { return { layout: copy(currentLayout), fonts: { ...editorState.fonts } }; }
+        function remember(previous) {
+            const history = undoHistory.get(currentProfile) || [];
+            history.push(previous);
+            if (history.length > 30) history.shift();
+            undoHistory.set(currentProfile, history);
+            redoHistory.set(currentProfile, []);
+        }
+        function updateEditorUI() {
+            board.dataset.editing = String(!editorState.locked);
+            const lock = document.getElementById('layout-lock-btn');
+            lock.setAttribute('aria-pressed', String(editorState.locked));
+            lock.title = editorState.locked ? 'Editar la posición y el tamaño de las tarjetas' : 'Fijar diseño y ocultar los tiradores';
+            document.getElementById('layout-lock-icon').textContent = editorState.locked ? '🔒' : '🔓';
+            document.getElementById('layout-lock-label').textContent = editorState.locked ? 'Editar diseño' : 'Fijar diseño';
+            document.getElementById('layout-help').textContent = editorState.locked
+                ? 'Diseño fijo. Pulsa «Editar diseño» para mover o redimensionar las tarjetas.'
+                : 'Selecciona una tarjeta y arrastra sus tiradores. Mueve desde el encabezado; suelta sobre otra para intercambiar lugares.';
+            document.getElementById('undo-layout-btn').disabled = editorState.locked || !(undoHistory.get(currentProfile)?.length);
+            document.getElementById('reset-layout-btn').disabled = editorState.locked;
+            for (const [id, card] of Object.entries(cardElements)) card.classList.toggle('is-selected', !editorState.locked && selectedCard === id && !card.hidden);
+            for (const id of ['instructions', 'data']) {
+                document.getElementById(`${id}-font-output`).textContent = `${editorState.fonts[id]} %`;
+                board.querySelectorAll(`[data-font-card="${id}"]`).forEach(button => {
+                    button.disabled = Number(button.dataset.fontStep) < 0 ? editorState.fonts[id] <= 75 : editorState.fonts[id] >= 220;
+                });
+            }
+        }
+        function renderLayout() {
+            for (const [id, rect] of Object.entries(currentLayout)) {
+                const card = cardElements[id];
+                card.style.left = `${rect.x * 100}%`;
+                card.style.top = `${rect.y * 100}%`;
+                card.style.width = `${rect.w * 100}%`;
+                card.style.height = `${rect.h * 100}%`;
+            }
+            updateEditorUI();
+            if (!fitFrame) fitFrame = requestAnimationFrame(() => { fitFrame = 0; fitContents(); });
+        }
+        function refreshBoard() {
+            const size = boardSize();
+            if (!body.classList.contains('is-projecting') || !size.w || !size.h) return;
+            if (interaction) finishInteraction(true);
+            currentProfile = profileKey(size);
+            const stored = editorState.profiles[currentProfile];
+            currentLayout = validLayout(stored) ? Object.fromEntries(visibleCards().map(id => [id, copy(stored[id])])) : defaultLayout(size);
+            if (selectedCard && cardElements[selectedCard].hidden) selectedCard = null;
+            renderLayout();
+            saveDesign();
+        }
+        function queueRefresh() {
+            if (!refreshFrame) refreshFrame = requestAnimationFrame(() => { refreshFrame = 0; refreshBoard(); });
+        }
+        function fitContents() {
+            if (!body.classList.contains('is-projecting')) return;
+            const timerBody = document.getElementById('timer-body'), timer = document.getElementById('time-remaining');
+            const timerStyle = getComputedStyle(timerBody);
+            const width = Math.max(1, timerBody.clientWidth - parseFloat(timerStyle.paddingLeft) - parseFloat(timerStyle.paddingRight));
+            const height = Math.max(1, timerBody.clientHeight - parseFloat(timerStyle.paddingTop) - parseFloat(timerStyle.paddingBottom));
+            const label = document.getElementById('timer-label'), clock = document.getElementById('real-clock-box');
+            label.style.fontSize = `${clamp(width / 34, 10, 23)}px`;
+            clock.style.fontSize = `${clamp(width / 23, 10, 25)}px`;
+            // En una tarjeta muy pequeña se da prioridad a los dígitos del tiempo restante.
+            label.hidden = height < 55;
+            clock.hidden = height < 100;
+            const spareHeight = Math.max(8, height - (label.hidden ? 0 : label.offsetHeight + 10) - (clock.hidden ? 0 : clock.offsetHeight + 12));
+            timer.style.fontSize = `${Math.max(8, Math.min(280, width / 4.85, spareHeight))}px`;
+            // La métrica real de la fuente puede diferir ligeramente entre Windows, macOS y Linux.
+            if (timer.scrollWidth > width) timer.style.fontSize = `${parseFloat(timer.style.fontSize) * width / timer.scrollWidth}px`;
+            const dataBody = document.getElementById('data-body');
+            dataBody.style.setProperty('--data-text-scale', editorState.fonts.data / 100);
+            document.getElementById('data-info-row').style.gridTemplateColumns = dataBody.clientWidth < 220 * editorState.fonts.data / 100 ? 'minmax(0,1fr)' : '';
+            if (!cardElements.instructions.hidden) {
+                const notesBody = document.getElementById('instructions-body'), list = document.getElementById('disp-instructions');
+                const style = getComputedStyle(notesBody);
+                const room = Math.max(1, notesBody.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) - document.getElementById('instructions-title').offsetHeight - 10);
+                let low = 12, high = clamp(notesBody.clientWidth / 42, 16, 26);
+                for (let i = 0; i < 7; i++) {
+                    const size = (low + high) / 2;
+                    list.style.fontSize = `${size}px`;
+                    if (list.scrollHeight <= room) low = size; else high = size;
+                }
+                list.style.fontSize = `${low * editorState.fonts.instructions / 100}px`;
+            }
+        }
+        function selectCard(id) { selectedCard = id; updateEditorUI(); }
+        function otherRectangles(id, layout = currentLayout, size = boardSize()) {
+            return Object.entries(layout).filter(([key]) => key !== id).map(([key, r]) => ({ id: key, ...pixelRect(r, size) }));
+        }
+        function containRect(rect, size) {
+            return { ...rect, x: clamp(rect.x, 0, Math.max(0, size.w - rect.w)), y: clamp(rect.y, 0, Math.max(0, size.h - rect.h)) };
+        }
+        function closestGuide(points, targets, threshold = 8) {
+            let best = null;
+            for (const point of points) for (const target of targets) {
+                const delta = target - point;
+                if (Math.abs(delta) <= threshold && (!best || Math.abs(delta) < Math.abs(best.delta))) best = { delta, target };
+            }
+            return best;
+        }
+        function guideTargets(others, size, axis) {
+            const start = axis === 'x' ? 'x' : 'y', length = axis === 'x' ? 'w' : 'h', total = axis === 'x' ? size.w : size.h;
+            return [0, total / 2, total, ...others.flatMap(r => [r[start], r[start] + r[length] / 2, r[start] + r[length], r[start] - 12, r[start] + r[length] + 12])];
+        }
+        function snapMove(rect, others, size, disabled) {
+            let x = null, y = null;
+            if (!disabled) {
+                x = closestGuide([rect.x, rect.x + rect.w / 2, rect.x + rect.w], guideTargets(others, size, 'x'));
+                y = closestGuide([rect.y, rect.y + rect.h / 2, rect.y + rect.h], guideTargets(others, size, 'y'));
+            }
+            const result = containRect({ ...rect, x: rect.x + (x?.delta || 0), y: rect.y + (y?.delta || 0) }, size);
+            return { rect: result, x: x?.target ?? null, y: y?.target ?? null };
+        }
+        function showGuides(x = null, y = null) {
+            const gx = document.getElementById('guide-x'), gy = document.getElementById('guide-y');
+            gx.hidden = x === null; gy.hidden = y === null;
+            if (x !== null) gx.style.left = `${x}px`;
+            if (y !== null) gy.style.top = `${y}px`;
+        }
+        // Encuentra el primer contacto durante todo el recorrido del borde, incluso en diagonal.
+        function preventResizeOverlap(origin, candidate, others) {
+            let fraction = 1;
+            for (const other of others) {
+                const gap = overlaps(origin, other, 2) ? 0 : 2;
+                const tests = [
+                    [origin.x + origin.w - other.x + gap, candidate.x + candidate.w - origin.x - origin.w],
+                    [other.x + other.w + gap - origin.x, origin.x - candidate.x],
+                    [origin.y + origin.h - other.y + gap, candidate.y + candidate.h - origin.y - origin.h],
+                    [other.y + other.h + gap - origin.y, origin.y - candidate.y]
+                ];
+                let enter = 0, leave = 1, possible = true;
+                for (const [offset, delta] of tests) {
+                    if (Math.abs(delta) < 1e-9) { if (offset <= 0) { possible = false; break; } }
+                    else if (delta > 0) enter = Math.max(enter, -offset / delta);
+                    else leave = Math.min(leave, -offset / delta);
+                }
+                if (possible && enter < leave && leave > 0 && enter < 1) fraction = Math.min(fraction, Math.max(0, enter - 0.0001));
+            }
+            return Object.fromEntries(['x','y','w','h'].map(k => [k, origin[k] + (candidate[k] - origin[k]) * fraction]));
+        }
+        function resizeRect(origin, direction, dx, dy, others, size, id, disableSnap = false) {
+            const minWidth = Math.min(origin.w, id === 'timer' ? 210 : id === 'data' ? 240 : 180);
+            const minHeight = Math.min(origin.h, id === 'data' ? 160 : 105);
+            let left = origin.x, right = origin.x + origin.w, top = origin.y, bottom = origin.y + origin.h;
+            if (direction.includes('w')) left = clamp(left + dx, 0, right - minWidth);
+            if (direction.includes('e')) right = clamp(right + dx, left + minWidth, size.w);
+            if (direction.includes('n')) top = clamp(top + dy, 0, bottom - minHeight);
+            if (direction.includes('s')) bottom = clamp(bottom + dy, top + minHeight, size.h);
+            let gx = null, gy = null;
+            if (!disableSnap) {
+                const xEdge = direction.includes('w') ? left : direction.includes('e') ? right : null;
+                const yEdge = direction.includes('n') ? top : direction.includes('s') ? bottom : null;
+                gx = xEdge === null ? null : closestGuide([xEdge], guideTargets(others, size, 'x'));
+                gy = yEdge === null ? null : closestGuide([yEdge], guideTargets(others, size, 'y'));
+                if (gx) { if (direction.includes('w')) left = clamp(left + gx.delta, 0, right - minWidth); else right = clamp(right + gx.delta, left + minWidth, size.w); }
+                if (gy) { if (direction.includes('n')) top = clamp(top + gy.delta, 0, bottom - minHeight); else bottom = clamp(bottom + gy.delta, top + minHeight, size.h); }
+            }
+            const rect = preventResizeOverlap(origin, { x: left, y: top, w: right - left, h: bottom - top }, others);
+            const actualX = direction.includes('w') ? rect.x : rect.x + rect.w, actualY = direction.includes('n') ? rect.y : rect.y + rect.h;
+            return { rect, x: gx && Math.abs(actualX - gx.target) < 1 ? gx.target : null, y: gy && Math.abs(actualY - gy.target) < 1 ? gy.target : null };
+        }
+        function swapTarget(rect, others, point) {
+            let target = null, score = -1;
+            for (const other of others) {
+                if (!overlaps(rect, other, 1)) continue;
+                const area = Math.max(0, Math.min(rect.x + rect.w, other.x + other.w) - Math.max(rect.x, other.x)) * Math.max(0, Math.min(rect.y + rect.h, other.y + other.h) - Math.max(rect.y, other.y));
+                const pointerInside = point.x >= other.x && point.x <= other.x + other.w && point.y >= other.y && point.y <= other.y + other.h;
+                const value = area / Math.min(rect.w * rect.h, other.w * other.h) + (pointerInside ? 2 : 0);
+                if (value > score) { target = other; score = value; }
+            }
+            return target;
+        }
+        function previewSwap(target) {
+            const preview = document.getElementById('drop-preview');
+            preview.hidden = !target;
+            if (!target) return;
+            Object.assign(preview.style, { left: `${target.x}px`, top: `${target.y}px`, width: `${target.w}px`, height: `${target.h}px` });
+            document.getElementById('drop-preview-label').textContent = `Intercambiar con ${cardNames[target.id]}`;
+        }
+        board.addEventListener('pointerdown', event => {
+            if (editorState.locked || event.button !== 0 || event.isPrimary === false) return;
+            const card = event.target.closest('.layout-card');
+            if (!card) { selectCard(null); return; }
+            const id = card.dataset.card;
+            selectCard(id);
+            const handle = event.target.closest('.resize-handle');
+            const move = event.target.closest('.card-drag-handle');
+            if (!handle && !move) return;
+            if (interaction) return;
+            event.preventDefault();
+            const size = boardSize();
+            if (!currentLayout[id] || !size.w || !size.h) return;
+            interaction = { id, pointerId: event.pointerId, type: handle ? 'resize' : 'move', direction: handle?.dataset.direction, x: event.clientX, y: event.clientY, size, origin: pixelRect(currentLayout[id], size), before: snapshot(), moved: false, target: null };
+            board.setPointerCapture(event.pointerId);
+            document.body.classList.add('is-arranging');
+            card.classList.add('is-moving');
         });
-        document.getElementById('close-view-panel').addEventListener('click', () => setViewPanelOpen(false));
+        board.addEventListener('pointermove', event => {
+            if (!interaction || event.pointerId !== interaction.pointerId) return;
+            const state = interaction, dx = event.clientX - state.x, dy = event.clientY - state.y;
+            if (!state.moved && Math.hypot(dx, dy) < 3) return;
+            state.moved = true;
+            const others = otherRectangles(state.id, state.before.layout, state.size);
+            const result = state.type === 'move'
+                ? snapMove(containRect({ ...state.origin, x: state.origin.x + dx, y: state.origin.y + dy }, state.size), others, state.size, event.altKey)
+                : resizeRect(state.origin, state.direction, dx, dy, others, state.size, state.id, event.altKey);
+            currentLayout[state.id] = relativeRect(result.rect, state.size);
+            if (state.type === 'move') {
+                const bounds = board.getBoundingClientRect();
+                state.target = swapTarget(result.rect, others, { x: event.clientX - bounds.left, y: event.clientY - bounds.top });
+                previewSwap(state.target);
+            }
+            showGuides(result.x, result.y);
+            renderLayout();
+        });
+        function finishInteraction(cancel = false) {
+            if (!interaction) return;
+            const state = interaction;
+            interaction = null;
+            if (cancel || !state.moved) currentLayout = copy(state.before.layout);
+            else if (state.type === 'move' && state.target) {
+                currentLayout = copy(state.before.layout);
+                currentLayout[state.id] = copy(state.before.layout[state.target.id]);
+                currentLayout[state.target.id] = copy(state.before.layout[state.id]);
+                notifyLayout('Tarjetas intercambiadas.');
+            }
+            if (!cancel && JSON.stringify(currentLayout) !== JSON.stringify(state.before.layout)) remember(state.before);
+            cardElements[state.id].classList.remove('is-moving');
+            body.classList.remove('is-arranging');
+            if (board.hasPointerCapture(state.pointerId)) board.releasePointerCapture(state.pointerId);
+            showGuides(); previewSwap(null);
+            renderLayout(); saveDesign();
+        }
+        board.addEventListener('pointerup', event => { if (interaction?.pointerId === event.pointerId) finishInteraction(); });
+        for (const name of ['pointercancel', 'lostpointercapture']) board.addEventListener(name, event => { if (interaction?.pointerId === event.pointerId) finishInteraction(true); });
+        window.addEventListener('blur', () => finishInteraction(true));
+
+        function undoLayout(redo = false) {
+            finishInteraction(true);
+            const source = redo ? redoHistory : undoHistory, destination = redo ? undoHistory : redoHistory;
+            const entries = source.get(currentProfile) || [];
+            if (!entries.length) return;
+            const next = entries.pop(), opposite = destination.get(currentProfile) || [];
+            opposite.push(snapshot()); destination.set(currentProfile, opposite);
+            currentLayout = copy(next.layout); editorState.fonts = { ...next.fonts };
+            renderLayout(); saveDesign(); notifyLayout(redo ? 'Cambio rehecho.' : 'Cambio deshecho.');
+        }
+        document.getElementById('undo-layout-btn').addEventListener('click', () => undoLayout());
+        document.getElementById('reset-layout-btn').addEventListener('click', () => {
+            finishInteraction(true);
+            remember(snapshot()); currentLayout = defaultLayout();
+            renderLayout(); saveDesign(); notifyLayout('Distribución restablecida. Puedes deshacer este cambio.');
+        });
+        document.getElementById('layout-lock-btn').addEventListener('click', () => {
+            finishInteraction(true); editorState.locked = !editorState.locked; selectedCard = null;
+            renderLayout(); saveDesign();
+        });
+        board.addEventListener('click', event => {
+            const button = event.target.closest('[data-font-card]');
+            if (!button || editorState.locked) return;
+            remember(snapshot());
+            const id = button.dataset.fontCard;
+            editorState.fonts[id] = clamp(editorState.fonts[id] + Number(button.dataset.fontStep), 75, 220);
+            renderLayout(); saveDesign();
+        });
         document.addEventListener('keydown', event => {
-            if (event.key !== 'Escape') return;
-            if (!viewPanel.hidden) setViewPanelOpen(false);
-            else if (body.classList.contains('is-projecting') && dataSidebarOpen) setDataSidebarOpen(false);
-        });
-        document.addEventListener('pointerdown', event => {
-            if (!viewPanel.hidden && !viewPanel.contains(event.target) &&
-                !viewToggle.contains(event.target) &&
-                !document.getElementById('image-adjust-btn').contains(event.target) &&
-                !imageResizeHandle.contains(event.target)) {
-                setViewPanelOpen(false, false);
+            if (!body.classList.contains('is-projecting') || event.target.closest('input, textarea, select')) return;
+            if (event.key === 'Escape') { if (interaction) finishInteraction(true); else selectCard(null); return; }
+            if (editorState.locked) return;
+            if ((event.ctrlKey || event.metaKey) && ['z','y'].includes(event.key.toLowerCase())) {
+                event.preventDefault(); undoLayout(event.key.toLowerCase() === 'y' || event.shiftKey); return;
             }
+            if (interaction || !['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(event.key)) return;
+            const button = event.target.closest('.card-drag-handle, .resize-handle');
+            if (!button) return;
+            const id = button.closest('[data-card]').dataset.card;
+            if (!currentLayout[id]) return;
+            event.preventDefault(); selectCard(id);
+            const size = boardSize(), origin = pixelRect(currentLayout[id], size), others = otherRectangles(id);
+            const step = event.shiftKey ? 1 : 10, dx = event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0, dy = event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0;
+            const rect = button.classList.contains('resize-handle')
+                ? resizeRect(origin, button.dataset.direction, dx, dy, others, size, id, true).rect
+                : containRect({ ...origin, x: origin.x + dx, y: origin.y + dy }, size);
+            if (others.some(other => overlaps(rect, other))) return;
+            const next = relativeRect(rect, size);
+            if (JSON.stringify(next) === JSON.stringify(currentLayout[id])) return;
+            remember(snapshot()); currentLayout[id] = next; renderLayout(); saveDesign();
         });
-
-        const rangeSettings = { 'column-width': 'column', 'image-width': 'imageWidth', 'image-height': 'imageHeight' };
-        Object.entries(rangeSettings).forEach(([id, key]) => {
-            const input = document.getElementById(id);
-            input.addEventListener('input', () => {
-                viewSettings[key] = Number(input.value);
-                applyViewSettings();
-            });
-        });
-        document.getElementById('image-fit').addEventListener('change', event => {
-            viewSettings.imageFit = event.target.value;
-            applyViewSettings();
-        });
-        document.getElementById('reset-view-btn').addEventListener('click', () => {
-            Object.assign(viewSettings, defaultView);
-            applyViewSettings();
-        });
-
-        function updateResponsiveControls() {
-            const stacked = window.matchMedia('(max-width: 700px)').matches;
-            document.getElementById('column-width').disabled = !selectedImage || stacked;
-            document.getElementById('column-width-hint').textContent = !selectedImage
-                ? 'Añade una imagen para repartir el espacio.'
-                : stacked ? 'En esta pantalla el reloj y la imagen se muestran uno sobre otro.'
-                : 'El resto del espacio queda para la imagen.';
-            document.getElementById('data-sidebar-backdrop').hidden =
-                !dataSidebarOpen || !window.matchMedia('(max-width: 900px)').matches;
-        }
-        window.addEventListener('resize', updateResponsiveControls);
-        updateResponsiveControls();
-        applyViewSettings();
-
-        function setImageSize(widthPercent, heightPercent) {
-            viewSettings.imageWidth = Math.round(Math.max(40, Math.min(100, widthPercent)));
-            viewSettings.imageHeight = Math.round(Math.max(40, Math.min(100, heightPercent)));
-            applyViewSettings();
-        }
-
-        imageResizeHandle.addEventListener('pointerdown', event => {
-            if (!selectedImage || event.button !== 0) return;
-            const card = document.getElementById('projection-image-card');
-            const available = card.parentElement.getBoundingClientRect();
-            if (!available.width || !available.height) return;
-            event.preventDefault();
-            imageResize = {
-                pointerId: event.pointerId,
-                x: event.clientX,
-                y: event.clientY,
-                width: card.getBoundingClientRect().width,
-                height: card.getBoundingClientRect().height,
-                availableWidth: available.width,
-                availableHeight: available.height
-            };
-            imageResizeHandle.setPointerCapture(event.pointerId);
-            body.classList.add('is-resizing-image');
-        });
-        imageResizeHandle.addEventListener('pointermove', event => {
-            if (!imageResize || event.pointerId !== imageResize.pointerId) return;
-            // La tarjeta permanece centrada: ambos lados cambian al redimensionar.
-            setImageSize(
-                (imageResize.width + 2 * (event.clientX - imageResize.x)) / imageResize.availableWidth * 100,
-                (imageResize.height + 2 * (event.clientY - imageResize.y)) / imageResize.availableHeight * 100
-            );
-        });
-        function finishImageResize() {
-            if (imageResize) {
-                const pointerId = imageResize.pointerId;
-                imageResize = null;
-                if (imageResizeHandle.hasPointerCapture(pointerId)) imageResizeHandle.releasePointerCapture(pointerId);
-            }
-            body.classList.remove('is-resizing-image');
-        }
-        ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(eventName => {
-            imageResizeHandle.addEventListener(eventName, event => {
-                if (imageResize && event.pointerId === imageResize.pointerId) finishImageResize();
-            });
-        });
-        imageResizeHandle.addEventListener('keydown', event => {
-            if (!selectedImage || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
-            event.preventDefault();
-            const widthChange = event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : 0;
-            const heightChange = event.key === 'ArrowUp' ? -1 : event.key === 'ArrowDown' ? 1 : 0;
-            setImageSize(viewSettings.imageWidth + widthChange, viewSettings.imageHeight + heightChange);
-        });
+        window.addEventListener('resize', queueRefresh);
+        if ('ResizeObserver' in window) new ResizeObserver(queueRefresh).observe(board);
+        if (document.fonts?.ready) document.fonts.ready.then(fitContents);
+        updateEditorUI();
 
         // --- HORA LOCAL DE LA COMPUTADORA ---
         function getRealNow() {
@@ -1135,20 +1230,21 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                         instructionsList.appendChild(li);
                     }
                 });
-                instructionsBox.style.display = 'block';
+                instructionsBox.hidden = false;
             } else {
-                instructionsBox.style.display = 'none';
+                instructionsBox.hidden = true;
             }
 
             // Cambiar pantallas
-            setViewPanelOpen(false, false);
+            finishInteraction(true);
             body.classList.add('is-projecting');
             document.getElementById('setup-screen').style.display = 'none';
             document.getElementById('display-screen').style.display = 'grid';
             if (!hasProjected) {
-                setDataSidebarOpen(!window.matchMedia('(max-width: 900px)').matches);
+                setDataSidebarOpen(editorState.dataOpen ?? !window.matchMedia('(max-width: 900px)').matches);
                 hasProjected = true;
             }
+            refreshBoard();
             
             document.getElementById('time-remaining').classList.remove('time-up');
 
@@ -1159,8 +1255,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
 
         function editConfig() {
             clearInterval(interval);
-            setViewPanelOpen(false, false);
-            finishImageResize();
+            finishInteraction(true);
             body.classList.remove('is-projecting');
             document.getElementById('display-screen').style.display = 'none';
             document.getElementById('setup-screen').style.display = 'block';
