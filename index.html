@@ -67,7 +67,20 @@
         }
 
         #setup-screen { max-width: 900px; }
-        #display-screen { max-width: 1400px; display: none; }
+        #display-screen {
+            display: none;
+            width: 100%;
+            max-width: none;
+            height: 100vh;
+            height: 100dvh;
+            padding: 18px;
+            border: 0;
+            border-radius: 0;
+            grid-template-rows: auto minmax(0, 1fr);
+            gap: 14px;
+            overflow: hidden;
+        }
+        body.is-projecting { display: block; min-height: 0; height: 100vh; height: 100dvh; overflow: hidden; }
 
         h1 { margin-top: 0; font-weight: 700; color: var(--accent); text-align: center; font-size: 2.2em;}
         p.subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 30px; margin-top: -10px;}
@@ -92,27 +105,26 @@
             z-index: 1000;
         }
         #theme-toggle:hover { background-color: var(--border-color); }
+        body.is-projecting #theme-toggle { top: 18px; right: 18px; padding: 8px 12px; height: 40px; font-size: 1em; }
 
-        /* --- BOTÓN EDITAR EN PANTALLA --- */
+        /* --- CONTROLES FUERA DEL ÁREA DE PROYECCIÓN --- */
+        .projection-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 40px; padding-right: 110px; }
         .projection-tools {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
             display: flex;
-            gap: 10px;
-            z-index: 1000;
+            align-items: center;
+            gap: 8px;
         }
         .projection-tools button {
             background: var(--accent);
             color: white;
             border: none;
-            padding: 12px 20px;
-            border-radius: 50px;
+            padding: 9px 12px;
+            border-radius: 10px;
             cursor: pointer;
-            font-size: 1em;
+            font-size: 0.85em;
             font-weight: 600;
             box-shadow: var(--shadow);
-            opacity: 0.4;
+            opacity: 0.75;
             transition: opacity 0.3s;
         }
         .projection-tools:hover button, .projection-tools button:focus-visible { opacity: 1; }
@@ -196,16 +208,24 @@
         /* --- TARJETA DE IMAGEN EN LA PROYECCIÓN --- */
         .image-card {
             width: var(--image-card-width, 100%);
+            height: var(--image-card-height, 100%);
             max-width: 100%;
+            max-height: 100%;
+            min-width: 0;
+            min-height: 0;
             align-self: center;
+            justify-self: center;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
             padding: 15px;
             background: var(--bg-color);
             border: 1px solid var(--border-color);
             border-radius: 15px;
+            overflow: hidden;
         }
         .image-card-header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.85em; font-weight: 600; }
         .image-card-header .btn-secondary { padding: 5px 9px; font-size: 0.85em; }
-        .image-frame { position: relative; height: var(--image-height, 280px); overflow: hidden; border-radius: 10px; }
+        .image-frame { position: relative; min-width: 0; min-height: 0; overflow: hidden; border-radius: 10px; }
         .image-frame img { display: block; width: 100%; height: 100%; object-fit: var(--image-fit, contain); object-position: center; }
         .image-resize-handle {
             position: absolute;
@@ -230,7 +250,7 @@
         .view-panel {
             position: fixed;
             right: 20px;
-            bottom: 85px;
+            top: 74px;
             width: 330px;
             max-width: calc(100vw - 24px);
             max-height: calc(100vh - 110px);
@@ -274,32 +294,76 @@
             transform: translateY(-2px);
         }
 
-        /* --- DISTRIBUCIÓN PANTALLA PROYECTOR --- */
+        /* --- PANEL LATERAL Y ESCENARIO AJUSTADO A LA PANTALLA --- */
+        .dashboard-workspace {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) clamp(270px, 22vw, 340px);
+            gap: 18px;
+            min-width: 0;
+            min-height: 0;
+            position: relative;
+        }
+        .dashboard-workspace[data-sidebar-open="false"] { grid-template-columns: minmax(0, 1fr); }
+        .projection-main {
+            display: grid;
+            grid-template-rows: minmax(0, 1fr) auto;
+            gap: 14px;
+            min-width: 0;
+            min-height: 0;
+            container-type: inline-size;
+        }
         .projection-grid {
             display: grid;
-            grid-template-columns: minmax(0, var(--left-column-size, 1.6fr)) minmax(0, var(--right-column-size, 1fr));
-            gap: 40px;
-            align-items: start;
+            grid-template-columns: minmax(0, var(--timer-column-size, 40fr)) minmax(0, var(--image-column-size, 60fr));
+            grid-template-rows: minmax(0, 1fr);
+            gap: 16px;
+            min-width: 0;
+            min-height: 0;
         }
-        .left-column, .right-column { min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+        .projection-grid[data-has-image="false"] { grid-template-columns: minmax(0, 1fr); }
+        .image-slot { display: grid; grid-template-rows: minmax(0, 1fr); min-width: 0; min-height: 0; }
+        .data-sidebar {
+            min-width: 0;
+            min-height: 0;
+            padding: 18px;
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            background: var(--bg-color);
+            overflow-y: auto;
+        }
+        .data-sidebar-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 18px; }
+        .data-sidebar-header h2 { margin: 0; font-size: 1em; }
+        .sidebar-backdrop { display: none; }
 
-        .eval-header { border-bottom: 2px solid var(--border-color); padding-bottom: 20px; text-align: left; }
-        .eval-title { font-size: 2.1em; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1.2; }
+        .eval-header { border-bottom: 2px solid var(--border-color); padding-bottom: 15px; margin-bottom: 15px; text-align: left; }
+        .eval-title { font-size: 1.25em; font-weight: 700; color: var(--text-main); margin: 0; line-height: 1.3; overflow-wrap: anywhere; }
         .eval-type-badge {
             display: inline-block; background-color: var(--accent); color: white;
             padding: 5px 15px; border-radius: 50px; font-size: 0.85em; font-weight: 600; text-transform: uppercase; margin-top: 10px;
         }
 
-        .info-vertical-stack { display: flex; flex-direction: column; gap: 15px; text-align: left; }
-        .info-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
-        .info-item { background-color: var(--bg-color); padding: 15px 20px; border-radius: 10px; border-left: 4px solid var(--border-color); }
+        .info-vertical-stack { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+        .info-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .info-item { background-color: var(--card-bg); padding: 10px 12px; border-radius: 10px; border-left: 4px solid var(--border-color); }
         .info-item.accent-border { border-left-color: var(--accent); }
         .info-label { font-size: 0.75em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        .info-value { font-size: 1.15em; font-weight: 600; color: var(--text-main); }
+        .info-value { font-size: 0.95em; font-weight: 600; color: var(--text-main); overflow-wrap: anywhere; }
 
         /* Contenedor del Temporizador y Reloj Oficial */
-        .timer-container { container-type: inline-size; min-width: 0; background-color: var(--bg-color); border-radius: 15px; padding: 25px 10px; text-align: center; }
-        .timer-label { font-size: 1.3em; color: var(--text-secondary); font-weight: 600; letter-spacing: 3px; margin-bottom: 5px; }
+        .timer-container {
+            container-type: size;
+            min-width: 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: var(--bg-color);
+            border-radius: 15px;
+            padding: 20px 12px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .timer-label { font-size: clamp(0.8rem, 1.4vw, 1.3rem); color: var(--text-secondary); font-weight: 600; letter-spacing: 2px; margin-bottom: 14px; }
         .timer {
             /* Ocho caracteres de ancho fijo: los segundos no alteran la distribución. */
             font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Liberation Mono', monospace;
@@ -312,14 +376,14 @@
         }
         /* Escala con el ancho disponible dentro de la tarjeta. */
         @supports (font-size: 1cqw) {
-            .timer { font-size: min(11rem, 20cqw); }
+            .timer { font-size: min(13rem, 19cqw, 44cqh); }
         }
         [data-theme="dark"] .timer { text-shadow: 0 0 30px rgba(255, 118, 117, 0.4); }
 
         .real-clock-box {
-            font-size: 1.8em;
+            font-size: clamp(0.85rem, 1.5vw, 1.45rem);
             color: var(--text-secondary);
-            margin-top: 20px;
+            margin-top: 18px;
             font-weight: 700;
             letter-spacing: 1px;
             border-top: 1px dashed var(--border-color);
@@ -340,15 +404,42 @@
 
         .instructions-container {
             background-color: var(--warn-bg); border: 2px solid var(--warn-border);
-            border-radius: 15px; padding: 30px; text-align: left; box-shadow: var(--shadow);
+            border-radius: 15px; padding: 16px 20px; text-align: left; box-shadow: var(--shadow);
+            min-height: 0; max-height: 40vh; max-height: 40dvh; overflow-y: auto;
         }
-        .instructions-title { font-size: 1.2em; font-weight: 700; color: var(--timer-color); letter-spacing: 1px; margin-top: 0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .instructions-list { margin: 0; padding-left: 20px; font-size: 1.05em; line-height: 1.7; font-weight: 600; color: var(--text-main); }
-        .instructions-list li { margin-bottom: 8px; }
+        .instructions-title { font-size: 1rem; font-weight: 700; color: var(--timer-color); letter-spacing: 0.5px; margin-top: 0; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .instructions-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 30px; margin: 0; padding-left: 20px; font-size: clamp(0.9rem, 1.2vw, 1.1rem); line-height: 1.45; font-weight: 600; color: var(--text-main); }
+        .instructions-list li { margin: 0; overflow-wrap: anywhere; }
 
-        @media (max-width: 992px) {
-            .projection-grid { grid-template-columns: 1fr; gap: 30px; }
+        @container (max-width: 760px) {
+            .instructions-list { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 900px) {
             .container { padding: 30px; }
+            .dashboard-workspace { grid-template-columns: minmax(0, 1fr); }
+            .data-sidebar { position: absolute; right: 0; top: 0; bottom: 0; width: min(340px, 90%); z-index: 25; background: var(--card-bg); box-shadow: var(--shadow); }
+            .sidebar-backdrop { display: block; position: absolute; inset: 0; border: 0; background: rgba(0, 0, 0, 0.4); z-index: 24; cursor: pointer; }
+        }
+        @media (max-width: 800px) {
+            .projection-toolbar { padding-right: 48px; gap: 6px; }
+            .projection-toolbar > button { font-size: 0.8em; padding: 8px; }
+            .projection-tools { gap: 5px; }
+            .projection-tools button { font-size: 0.8em; padding: 8px; }
+            .toolbar-label { display: none; }
+            body.is-projecting #theme-toggle { padding: 8px; }
+            body.is-projecting #theme-text { display: none; }
+        }
+        @media (max-width: 700px) {
+            #display-screen { padding: 12px; gap: 10px; }
+            .projection-main { gap: 10px; }
+            .projection-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 40fr) minmax(0, 60fr); gap: 10px; }
+            .projection-grid[data-has-image="false"] { grid-template-rows: minmax(0, 1fr); }
+            .timer-container { padding: 10px 12px; }
+            .timer-label { margin-bottom: 8px; }
+            .real-clock-box { margin-top: 10px; padding-top: 8px; }
+            .instructions-container { padding: 12px 16px; }
+            .instructions-list { grid-template-columns: 1fr; }
+            body.is-projecting #theme-toggle { top: 12px; right: 12px; padding: 8px; }
         }
         @media (max-width: 600px) {
             .form-grid { grid-template-columns: 1fr; }
@@ -357,9 +448,7 @@
             h1 { font-size: 1.6em; }
             .image-preview { grid-template-columns: 1fr; }
             .image-preview img { height: 150px; }
-            .projection-tools { bottom: 12px; right: 12px; gap: 6px; }
-            .projection-tools button { font-size: 0.8em; padding: 10px 12px; }
-            .view-panel { right: 12px; bottom: 65px; }
+            .view-panel { right: 12px; top: 65px; }
             .image-card-header { flex-wrap: wrap; }
         }
     </style>
@@ -378,8 +467,8 @@
             <div class="form-group full-width">
                 <label for="course-name">Nombre del curso</label>
                 <select id="course-name">
-                    <option value="automatizacion">Automatización e Industria 4.0</option>
-                    <option value="circuitos" selected>Circuitos Lógicos Digitales</option>
+                    <option value="automatizacion" selected>Automatización e Industria 4.0</option>
+                    <option value="circuitos">Circuitos Lógicos Digitales</option>
                 </select>
             </div>
             
@@ -452,7 +541,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                     <span class="upload-icon" aria-hidden="true">🖼️</span>
                     <p>Arrastra una imagen aquí</p>
                     <button type="button" class="btn-secondary" id="choose-image-btn">Seleccionar imagen</button>
-                    <p class="field-hint">Se mostrará debajo del reloj. Podrás ajustar su tamaño durante la proyección.</p>
+                    <p class="field-hint">Se mostrará junto al reloj. Podrás ajustar su tamaño durante la proyección.</p>
                 </div>
                 <div class="image-preview" id="image-preview-box" hidden>
                     <img id="image-preview" alt="Vista previa de la imagen seleccionada">
@@ -470,14 +559,19 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
     </div>
 
     <div class="container" id="display-screen">
-        <div class="projection-tools">
-            <button type="button" id="view-toggle" aria-expanded="false" aria-controls="view-panel">↔ Ajustar vista</button>
-            <button type="button" id="edit-btn" onclick="editConfig()">⚙️ Editar Datos</button>
+        <div class="projection-toolbar">
+            <button type="button" class="btn-secondary" id="data-sidebar-toggle" aria-expanded="true" aria-controls="data-sidebar">◀ Ocultar datos</button>
+            <div class="projection-tools">
+                <button type="button" id="view-toggle" aria-label="Ajustar vista" aria-expanded="false" aria-controls="view-panel">↔ <span class="toolbar-label">Ajustar vista</span></button>
+                <button type="button" id="fullscreen-btn" aria-label="Abrir pantalla completa" title="Pantalla completa">⛶ <span class="toolbar-label" id="fullscreen-label">Pantalla completa</span></button>
+                <button type="button" id="edit-btn" aria-label="Editar datos" onclick="editConfig()">⚙️ <span class="toolbar-label">Editar datos</span></button>
+            </div>
         </div>
-        
-        <div class="projection-grid" id="projection-grid">
-            <div class="left-column">
-                <div class="timer-container">
+
+        <div class="dashboard-workspace" id="dashboard-workspace" data-sidebar-open="true">
+            <main class="projection-main" id="projection-main">
+                <div class="projection-grid" id="projection-grid" data-has-image="false">
+                <div class="timer-container" id="timer-card">
                     <div class="timer-label">TIEMPO RESTANTE</div>
                     <div class="timer" id="time-remaining">00:00:00</div>
                     
@@ -485,6 +579,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                         Hora Actual: <span id="real-time-clock" class="real-clock-val">00:00:00</span>
                     </div>
                 </div>
+                <div class="image-slot" id="projection-image-slot" hidden>
                 <section class="image-card" id="projection-image-card" aria-label="Imagen de apoyo" hidden>
                     <div class="image-card-header">
                         <span>Imagen de apoyo</span>
@@ -495,13 +590,20 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                         <button type="button" class="image-resize-handle" id="image-resize-handle" title="Arrastra para cambiar el tamaño" aria-label="Redimensionar imagen. También puedes usar las flechas del teclado.">↘</button>
                     </div>
                 </section>
-                <div class="instructions-container" id="instructions-box">
-                    <div class="instructions-title">🚨 INDICACIONES DE LA EVALUACIÓN</div>
-                    <ul class="instructions-list" id="disp-instructions"></ul>
                 </div>
-            </div>
+                </div>
+                <section class="instructions-container" id="instructions-box" aria-labelledby="instructions-title">
+                    <h2 class="instructions-title" id="instructions-title">🚨 INDICACIONES DE LA EVALUACIÓN</h2>
+                    <ul class="instructions-list" id="disp-instructions"></ul>
+                </section>
+            </main>
 
-            <div class="right-column">
+            <button type="button" class="sidebar-backdrop" id="data-sidebar-backdrop" aria-label="Ocultar datos del curso" hidden></button>
+            <aside class="data-sidebar" id="data-sidebar" aria-labelledby="data-sidebar-title">
+                <div class="data-sidebar-header">
+                    <h2 id="data-sidebar-title">Datos de la evaluación</h2>
+                    <button type="button" class="close-panel-btn" id="close-data-sidebar" aria-label="Ocultar datos del curso">×</button>
+                </div>
                 <div class="eval-header">
                     <div class="eval-title" id="disp-course"></div>
                     <div class="eval-type-badge" id="disp-eval-type"></div>
@@ -538,7 +640,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                         <div class="info-value" id="disp-end"></div>
                     </div>
                 </div>
-            </div>
+            </aside>
         </div>
     </div>
 
@@ -548,9 +650,9 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             <button type="button" class="close-panel-btn" id="close-view-panel" aria-label="Cerrar ajustes">×</button>
         </div>
         <div class="view-control">
-            <label for="column-width">Columna izquierda <output id="column-width-output" for="column-width">62 %</output></label>
-            <input type="range" id="column-width" min="40" max="75" step="1" value="62">
-            <p class="field-hint" id="column-width-hint">Espacio para el reloj, la imagen y las indicaciones.</p>
+            <label for="column-width">Espacio del temporizador <output id="column-width-output" for="column-width">40 %</output></label>
+            <input type="range" id="column-width" min="30" max="60" step="1" value="40">
+            <p class="field-hint" id="column-width-hint">El resto del espacio queda para la imagen.</p>
         </div>
         <div class="image-view-controls" id="image-view-controls" hidden>
             <div class="view-control">
@@ -558,8 +660,8 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                 <input type="range" id="image-width" min="40" max="100" step="1" value="100">
             </div>
             <div class="view-control">
-                <label for="image-height">Alto de imagen <output id="image-height-output" for="image-height">280 px</output></label>
-                <input type="range" id="image-height" min="160" max="640" step="10" value="280">
+                <label for="image-height">Alto de imagen <output id="image-height-output" for="image-height">100 %</output></label>
+                <input type="range" id="image-height" min="40" max="100" step="1" value="100">
             </div>
             <div class="view-control">
                 <label for="image-fit">Mostrar imagen</label>
@@ -567,7 +669,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                     <option value="contain">Imagen completa</option>
                     <option value="cover">Llenar tarjeta (recorta bordes)</option>
                 </select>
-                <p class="field-hint">También puedes arrastrar la esquina inferior derecha de la imagen.</p>
+                <p class="field-hint">El tamaño se ajusta al espacio disponible y mantiene visibles las indicaciones.</p>
             </div>
         </div>
         <button type="button" class="btn-secondary panel-reset" id="reset-view-btn">Restablecer vista</button>
@@ -660,6 +762,45 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             }
         }
 
+        // --- DATOS EN UN PANEL LATERAL OCULTABLE ---
+        const dataSidebar = document.getElementById('data-sidebar');
+        const dataSidebarToggle = document.getElementById('data-sidebar-toggle');
+        let dataSidebarOpen = true;
+        let hasProjected = false;
+
+        function setDataSidebarOpen(isOpen) {
+            dataSidebarOpen = isOpen;
+            dataSidebar.hidden = !isOpen;
+            document.getElementById('dashboard-workspace').setAttribute('data-sidebar-open', String(isOpen));
+            dataSidebarToggle.setAttribute('aria-expanded', String(isOpen));
+            dataSidebarToggle.textContent = isOpen ? '◀ Ocultar datos' : '☰ Mostrar datos';
+            document.getElementById('data-sidebar-backdrop').hidden =
+                !isOpen || !window.matchMedia('(max-width: 900px)').matches;
+            if (!isOpen && dataSidebar.contains(document.activeElement)) dataSidebarToggle.focus();
+        }
+
+        dataSidebarToggle.addEventListener('click', () => setDataSidebarOpen(!dataSidebarOpen));
+        document.getElementById('close-data-sidebar').addEventListener('click', () => setDataSidebarOpen(false));
+        document.getElementById('data-sidebar-backdrop').addEventListener('click', () => setDataSidebarOpen(false));
+
+        // La pantalla completa usa la misma distribución y conserva el tiempo de fin.
+        const fullscreenButton = document.getElementById('fullscreen-btn');
+        fullscreenButton.addEventListener('click', async () => {
+            try {
+                if (document.fullscreenElement) await document.exitFullscreen();
+                else if (document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+                else fullscreenButton.title = 'Usa F11 para activar la pantalla completa.';
+            } catch (_) {
+                fullscreenButton.title = 'Usa F11 para activar la pantalla completa.';
+            }
+        });
+        document.addEventListener('fullscreenchange', () => {
+            const isFullscreen = Boolean(document.fullscreenElement);
+            document.getElementById('fullscreen-label').textContent = isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa';
+            fullscreenButton.setAttribute('aria-label', isFullscreen ? 'Salir de pantalla completa' : 'Abrir pantalla completa');
+            fullscreenButton.title = isFullscreen ? 'Salir de pantalla completa' : 'Pantalla completa';
+        });
+
         // --- CARGA LOCAL DE IMAGEN Y VISTA PREVIA ---
         const imageUpload = document.getElementById('image-upload');
         const imageDropzone = document.getElementById('image-dropzone');
@@ -679,6 +820,8 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             const hasImage = Boolean(selectedImage);
             document.getElementById('image-preview-box').hidden = !hasImage;
             document.getElementById('projection-image-card').hidden = !hasImage;
+            document.getElementById('projection-image-slot').hidden = !hasImage;
+            document.getElementById('projection-grid').setAttribute('data-has-image', String(hasImage));
             document.getElementById('image-view-controls').hidden = !hasImage;
             const preview = document.getElementById('image-preview');
             const projection = document.getElementById('projection-image');
@@ -694,6 +837,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                 document.getElementById('image-file-name').textContent = '';
                 document.getElementById('image-file-details').textContent = '';
             }
+            updateResponsiveControls();
         }
 
         function loadImageFile(file) {
@@ -779,7 +923,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
         });
 
         // --- DISTRIBUCIÓN E IMAGEN AJUSTABLES SIN REINICIAR EL RELOJ ---
-        const defaultView = Object.freeze({ column: 62, imageWidth: 100, imageHeight: 280, imageFit: 'contain' });
+        const defaultView = Object.freeze({ column: 40, imageWidth: 100, imageHeight: 100, imageFit: 'contain' });
         const viewSettings = { ...defaultView };
         const viewPanel = document.getElementById('view-panel');
         const viewToggle = document.getElementById('view-toggle');
@@ -788,11 +932,11 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
 
         function applyViewSettings() {
             const grid = document.getElementById('projection-grid');
-            grid.style.setProperty('--left-column-size', `${viewSettings.column}fr`);
-            grid.style.setProperty('--right-column-size', `${100 - viewSettings.column}fr`);
+            grid.style.setProperty('--timer-column-size', `${viewSettings.column}fr`);
+            grid.style.setProperty('--image-column-size', `${100 - viewSettings.column}fr`);
             const card = document.getElementById('projection-image-card');
             card.style.setProperty('--image-card-width', `${viewSettings.imageWidth}%`);
-            card.style.setProperty('--image-height', `${viewSettings.imageHeight}px`);
+            card.style.setProperty('--image-card-height', `${viewSettings.imageHeight}%`);
             card.style.setProperty('--image-fit', viewSettings.imageFit);
 
             document.getElementById('column-width').value = viewSettings.column;
@@ -800,7 +944,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             document.getElementById('image-width').value = viewSettings.imageWidth;
             document.getElementById('image-width-output').textContent = `${viewSettings.imageWidth} %`;
             document.getElementById('image-height').value = viewSettings.imageHeight;
-            document.getElementById('image-height-output').textContent = `${viewSettings.imageHeight} px`;
+            document.getElementById('image-height-output').textContent = `${viewSettings.imageHeight} %`;
             document.getElementById('image-fit').value = viewSettings.imageFit;
         }
 
@@ -819,7 +963,9 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
         });
         document.getElementById('close-view-panel').addEventListener('click', () => setViewPanelOpen(false));
         document.addEventListener('keydown', event => {
-            if (event.key === 'Escape' && !viewPanel.hidden) setViewPanelOpen(false);
+            if (event.key !== 'Escape') return;
+            if (!viewPanel.hidden) setViewPanelOpen(false);
+            else if (body.classList.contains('is-projecting') && dataSidebarOpen) setDataSidebarOpen(false);
         });
         document.addEventListener('pointerdown', event => {
             if (!viewPanel.hidden && !viewPanel.contains(event.target) &&
@@ -848,44 +994,49 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
         });
 
         function updateResponsiveControls() {
-            const singleColumn = window.matchMedia('(max-width: 992px)').matches;
-            document.getElementById('column-width').disabled = singleColumn;
-            document.getElementById('column-width-hint').textContent = singleColumn
-                ? 'En esta pantalla las tarjetas se muestran en una columna.'
-                : 'Espacio para el reloj, la imagen y las indicaciones.';
+            const stacked = window.matchMedia('(max-width: 700px)').matches;
+            document.getElementById('column-width').disabled = !selectedImage || stacked;
+            document.getElementById('column-width-hint').textContent = !selectedImage
+                ? 'Añade una imagen para repartir el espacio.'
+                : stacked ? 'En esta pantalla el reloj y la imagen se muestran uno sobre otro.'
+                : 'El resto del espacio queda para la imagen.';
+            document.getElementById('data-sidebar-backdrop').hidden =
+                !dataSidebarOpen || !window.matchMedia('(max-width: 900px)').matches;
         }
         window.addEventListener('resize', updateResponsiveControls);
         updateResponsiveControls();
         applyViewSettings();
 
-        function setImageSize(widthPercent, heightPixels) {
+        function setImageSize(widthPercent, heightPercent) {
             viewSettings.imageWidth = Math.round(Math.max(40, Math.min(100, widthPercent)));
-            viewSettings.imageHeight = Math.round(Math.max(160, Math.min(640, heightPixels)) / 10) * 10;
+            viewSettings.imageHeight = Math.round(Math.max(40, Math.min(100, heightPercent)));
             applyViewSettings();
         }
 
         imageResizeHandle.addEventListener('pointerdown', event => {
             if (!selectedImage || event.button !== 0) return;
             const card = document.getElementById('projection-image-card');
-            const availableWidth = card.parentElement.getBoundingClientRect().width;
-            if (!availableWidth) return;
+            const available = card.parentElement.getBoundingClientRect();
+            if (!available.width || !available.height) return;
             event.preventDefault();
             imageResize = {
                 pointerId: event.pointerId,
                 x: event.clientX,
                 y: event.clientY,
                 width: card.getBoundingClientRect().width,
-                height: document.getElementById('projection-image-frame').getBoundingClientRect().height,
-                availableWidth
+                height: card.getBoundingClientRect().height,
+                availableWidth: available.width,
+                availableHeight: available.height
             };
             imageResizeHandle.setPointerCapture(event.pointerId);
             body.classList.add('is-resizing-image');
         });
         imageResizeHandle.addEventListener('pointermove', event => {
             if (!imageResize || event.pointerId !== imageResize.pointerId) return;
+            // La tarjeta permanece centrada: ambos lados cambian al redimensionar.
             setImageSize(
-                (imageResize.width + event.clientX - imageResize.x) / imageResize.availableWidth * 100,
-                imageResize.height + event.clientY - imageResize.y
+                (imageResize.width + 2 * (event.clientX - imageResize.x)) / imageResize.availableWidth * 100,
+                (imageResize.height + 2 * (event.clientY - imageResize.y)) / imageResize.availableHeight * 100
             );
         });
         function finishImageResize() {
@@ -905,7 +1056,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             if (!selectedImage || !['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) return;
             event.preventDefault();
             const widthChange = event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : 0;
-            const heightChange = event.key === 'ArrowUp' ? -10 : event.key === 'ArrowDown' ? 10 : 0;
+            const heightChange = event.key === 'ArrowUp' ? -1 : event.key === 'ArrowDown' ? 1 : 0;
             setImageSize(viewSettings.imageWidth + widthChange, viewSettings.imageHeight + heightChange);
         });
 
@@ -991,8 +1142,13 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
 
             // Cambiar pantallas
             setViewPanelOpen(false, false);
+            body.classList.add('is-projecting');
             document.getElementById('setup-screen').style.display = 'none';
-            document.getElementById('display-screen').style.display = 'block';
+            document.getElementById('display-screen').style.display = 'grid';
+            if (!hasProjected) {
+                setDataSidebarOpen(!window.matchMedia('(max-width: 900px)').matches);
+                hasProjected = true;
+            }
             
             document.getElementById('time-remaining').classList.remove('time-up');
 
@@ -1004,6 +1160,8 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
         function editConfig() {
             clearInterval(interval);
             setViewPanelOpen(false, false);
+            finishImageResize();
+            body.classList.remove('is-projecting');
             document.getElementById('display-screen').style.display = 'none';
             document.getElementById('setup-screen').style.display = 'block';
 
