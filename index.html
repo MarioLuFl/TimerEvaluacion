@@ -184,6 +184,7 @@
         }
 
         .info-vertical-stack { display: flex; flex-direction: column; gap: 15px; text-align: left; }
+        .info-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
         .info-item { background-color: var(--bg-color); padding: 15px 20px; border-radius: 10px; border-left: 4px solid var(--border-color); }
         .info-item.accent-border { border-left-color: var(--accent); }
         .info-label { font-size: 0.75em; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
@@ -256,8 +257,11 @@
         
         <div class="form-grid">
             <div class="form-group full-width">
-                <label>Nombre del curso</label>
-                <input type="text" id="course-name" placeholder="Ej: Circuitos Lógicos Digitales" value="Circuitos Lógicos Digitales">
+                <label for="course-name">Nombre del curso</label>
+                <select id="course-name">
+                    <option value="automatizacion">Automatización e Industria 4.0</option>
+                    <option value="circuitos" selected>Circuitos Lógicos Digitales</option>
+                </select>
             </div>
             
             <div class="form-group">
@@ -266,8 +270,25 @@
             </div>
             
             <div class="form-group">
-                <label>Tipo de Evaluación</label>
-                <input type="text" id="eval-type" placeholder="Ej: Examen Parcial, Quiz, Final" value="Examen Final">
+                <label for="eval-type">Tipo de Evaluación</label>
+                <select id="eval-type">
+                    <option value="Examen Parcial" selected>Examen Parcial</option>
+                    <option value="Examen Final">Examen Final</option>
+                    <option value="PC1">PC1</option>
+                    <option value="LB1">LB1</option>
+                    <option value="PC2">PC2</option>
+                    <option value="LB2">LB2</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="course-group" id="course-group-label">NRC</label>
+                <input type="text" id="course-group" value="8506">
+            </div>
+
+            <div class="form-group">
+                <label for="classroom">Aula</label>
+                <input type="text" id="classroom" value="C811">
             </div>
 
             <div class="form-group full-width">
@@ -277,33 +298,32 @@
             
             <div class="form-group">
                 <label>Hora de Inicio (Mostrada en pantalla)</label>
-                <input type="time" id="start-time-input">
+                <input type="time" id="start-time-input" value="08:00">
             </div>
 
             <div class="form-group">
                 <label>Tipo de Temporizador</label>
                 <select id="timer-type" onchange="toggleTimerInputs()">
                     <option value="countdown">Cuenta Regresiva (Minutos)</option>
-                    <option value="endtime">Hora de Fin (Exacta)</option>
+                    <option value="endtime" selected>Hora de Fin (Exacta)</option>
                 </select>
             </div>
             
-            <div class="form-group full-width" id="div-duration">
+            <div class="form-group full-width" id="div-duration" style="display: none;">
                 <label>Duración (en minutos)</label>
                 <input type="number" id="duration-mins" value="150" min="1">
             </div>
             
-            <div class="form-group full-width" id="div-endtime" style="display: none;">
+            <div class="form-group full-width" id="div-endtime">
                 <label>Hora de Fin Exacta</label>
-                <input type="time" id="end-time-input">
+                <input type="time" id="end-time-input" value="10:30">
             </div>
 
             <div class="form-group full-width">
                 <label>Indicaciones para los Alumnos (una regla por línea)</label>
-                <textarea id="instructions-input" rows="5">APAGAR Y GUARDAR CELULARES EN MOCHILA (DEBAJO DE PANTALLA)
-PROHIBIDO INTERCAMBIAR MATERIALES (CALCULADORA, LAPICERO, ETC)
-PROHIBIDO SALIR DEL AULA UNA VEZ INICIADO SU EVALUACIÓN
-LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
+                <textarea id="instructions-input" rows="5">Apagar y guardar los celulares en la mochila (debajo de la pizarra).
+Prohibido el intercambio de materiales y salir del aula.
+Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen derecho a reclamo.</textarea>
             </div>
         </div>
 
@@ -339,6 +359,16 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
                         <div class="info-label">Código</div>
                         <div class="info-value" id="disp-code"></div>
                     </div>
+                    <div class="info-row">
+                        <div class="info-item">
+                            <div class="info-label" id="disp-group-label">NRC</div>
+                            <div class="info-value" id="disp-group"></div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Aula</div>
+                            <div class="info-value" id="disp-classroom"></div>
+                        </div>
+                    </div>
                     <div class="info-item">
                         <div class="info-label">Profesor</div>
                         <div class="info-value" id="disp-prof"></div>
@@ -363,6 +393,58 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
     <script>
         let interval;
         let globalEndTime = null;
+
+        // --- DATOS PREDETERMINADOS DE LOS CURSOS ---
+        const coursePresets = {
+            automatizacion: {
+                name: 'Automatización e Industria 4.0',
+                code: '1IND54',
+                groupLabel: 'Horario',
+                group: '0931',
+                classroom: 'M301',
+                professor: 'Sobrado Malpartida, Eddie Angel',
+                instructions: [
+                    'La parte I se responde marcando el cuestionario en la misma hoja. No se permite ir a los SS. HH.',
+                    'En el cuestionario, marcar solo una alternativa por pregunta.',
+                    'La parte II se resuelve en cuadernillo.',
+                    'Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen derecho a reclamo.'
+                ]
+            },
+            circuitos: {
+                name: 'Circuitos Lógicos Digitales',
+                code: '1AEL0245',
+                groupLabel: 'NRC',
+                group: '8506',
+                classroom: 'C811',
+                professor: 'Msc. Mario Lupaca Flores',
+                instructions: [
+                    'Apagar y guardar los celulares en la mochila (debajo de la pizarra).',
+                    'Prohibido el intercambio de materiales y salir del aula.',
+                    'Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen derecho a reclamo.'
+                ]
+            }
+        };
+
+        function applyCourseDefaults() {
+            const course = coursePresets[document.getElementById('course-name').value];
+            document.getElementById('course-code').value = course.code;
+            document.getElementById('course-group-label').innerText = course.groupLabel;
+            document.getElementById('course-group').value = course.group;
+            document.getElementById('classroom').value = course.classroom;
+            document.getElementById('prof-name').value = course.professor;
+            document.getElementById('instructions-input').value = course.instructions.join('\n');
+
+            // Valores comunes a todos los cursos; pueden editarse antes de proyectar.
+            document.getElementById('eval-type').value = 'Examen Parcial';
+            document.getElementById('start-time-input').value = '08:00';
+            document.getElementById('timer-type').value = 'endtime';
+            document.getElementById('end-time-input').value = '10:30';
+            document.getElementById('duration-mins').value = '150';
+            toggleTimerInputs();
+        }
+
+        document.getElementById('course-name').addEventListener('change', applyCourseDefaults);
+        applyCourseDefaults();
 
         // --- GESTIÓN DE TEMAS (DÍA/NOCHE) ---
         const themeToggle = document.getElementById('theme-toggle');
@@ -399,16 +481,6 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
         function getRealNow() {
             return new Date(); // Confiamos plenamente en el reloj del sistema operativo
         }
-
-        function updateStartTimeField() {
-            const now = getRealNow();
-            document.getElementById('start-time-input').value = 
-                now.getHours().toString().padStart(2, '0') + ':' + 
-                now.getMinutes().toString().padStart(2, '0');
-        }
-
-        // Cargar la hora de la computadora en el campo "Hora de Inicio" al abrir la app
-        updateStartTimeField();
 
         // --- LÓGICA DEL TEMPORIZADOR Y EDICIÓN ---
         function toggleTimerInputs() {
@@ -447,9 +519,13 @@ LAPIZ O LAPICERO BORRABLE NO TIENE DERECHO A RECLAMO</textarea>
             }
 
             // Datos de texto
-            document.getElementById('disp-course').innerText = document.getElementById('course-name').value;
+            const course = coursePresets[document.getElementById('course-name').value];
+            document.getElementById('disp-course').innerText = course.name;
             document.getElementById('disp-eval-type').innerText = document.getElementById('eval-type').value;
             document.getElementById('disp-code').innerText = document.getElementById('course-code').value;
+            document.getElementById('disp-group-label').innerText = course.groupLabel;
+            document.getElementById('disp-group').innerText = document.getElementById('course-group').value;
+            document.getElementById('disp-classroom').innerText = document.getElementById('classroom').value;
             document.getElementById('disp-prof').innerText = document.getElementById('prof-name').value;
             
             // Fecha
