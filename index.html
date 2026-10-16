@@ -226,13 +226,12 @@
         }
 
         /* Tarjetas libres: las coordenadas se guardan como proporciones de la pantalla. */
-        #display-screen { grid-template-rows: auto auto minmax(0, 1fr); gap: 8px; }
+        #display-screen { grid-template-rows: auto minmax(0, 1fr); gap: 8px; }
         .projection-toolbar { flex-wrap: wrap; }
         .projection-tools { flex-wrap: wrap; justify-content: flex-end; }
         .projection-tools button { font-family: inherit; }
         .projection-tools button[aria-pressed="true"] { background: var(--text-main); color: var(--card-bg); opacity: 1; }
         .projection-tools button:disabled { opacity: 0.3; cursor: default; }
-        .layout-hint { min-height: 24px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; color: var(--text-secondary); font-size: 0.78rem; padding: 0 9px; }
         #layout-notice { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); max-width: 85vw; padding: 9px 14px; border: 1px solid var(--accent); border-radius: 10px; background: var(--card-bg); color: var(--accent); font-weight: 600; box-shadow: var(--shadow); z-index: 120; pointer-events: none; }
         #layout-notice:empty { display: none; }
         .dashboard-workspace { min-height: 0; min-width: 0; padding: 9px; overflow: hidden; }
@@ -307,7 +306,6 @@
             .toolbar-label { display: none; }
             body.is-projecting #theme-toggle { padding: 8px; }
             body.is-projecting #theme-text { display: none; }
-            .layout-hint { font-size: 0.7rem; }
         }
         @media (max-width: 600px) {
             .form-grid { grid-template-columns: 1fr; }
@@ -343,7 +341,8 @@
             <div class="form-group full-width">
                 <label for="course-name">Nombre del curso</label>
                 <select id="course-name">
-                    <option value="automatizacion" selected>Automatización e Industria 4.0</option>
+                    <option value="automatizacion">Automatización e Industria 4.0</option>
+                    <option value="industrial_inteligente_b" selected>AUTOMATIZACIÓN INDUSTRIAL INTELIGENTE B</option>
                     <option value="circuitos">Circuitos Lógicos Digitales</option>
                 </select>
             </div>
@@ -445,10 +444,7 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                 <button type="button" id="edit-btn" aria-label="Editar datos" onclick="editConfig()">⚙️ <span class="toolbar-label">Editar datos</span></button>
             </div>
         </div>
-        <div class="layout-hint">
-            <span id="layout-help">Selecciona una tarjeta. Arrastra su encabezado para moverla y sus tiradores para cambiar el tamaño.</span>
-            <span id="layout-notice" role="status" aria-live="polite"></span>
-        </div>
+        <span id="layout-notice" role="status" aria-live="polite"></span>
         <div class="dashboard-workspace" id="dashboard-workspace">
             <main class="layout-board" id="layout-board" data-editing="true" aria-label="Área de proyección con tarjetas movibles">
                 <section class="layout-card" id="timer-card" data-card="timer" aria-label="Temporizador">
@@ -538,6 +534,19 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                     'Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen derecho a reclamo.'
                 ]
             },
+            industrial_inteligente_b: {
+                name: 'AUTOMATIZACIÓN INDUSTRIAL INTELIGENTE B',
+                code: '1MTR56',
+                groupLabel: 'Horario',
+                group: '08M1',
+                classroom: 'A401',
+                professor: 'Sobrado Malpartida, Eddie Angel',
+                startTime: '15:00',
+                endTime: '17:30',
+                instructions: [
+                    'Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen derecho a reclamo.'
+                ]
+            },
             circuitos: {
                 name: 'Circuitos Lógicos Digitales',
                 code: '1AEL0245',
@@ -562,11 +571,11 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             document.getElementById('prof-name').value = course.professor;
             document.getElementById('instructions-input').value = course.instructions.join('\n');
 
-            // Valores comunes a todos los cursos; pueden editarse antes de proyectar.
+            // Los horarios específicos del curso también pueden editarse antes de proyectar.
             document.getElementById('eval-type').value = 'Examen Parcial';
-            document.getElementById('start-time-input').value = '08:00';
+            document.getElementById('start-time-input').value = course.startTime ?? '08:00';
             document.getElementById('timer-type').value = 'endtime';
-            document.getElementById('end-time-input').value = '10:30';
+            document.getElementById('end-time-input').value = course.endTime ?? '10:30';
             document.getElementById('duration-mins').value = '150';
             toggleTimerInputs();
         }
@@ -877,9 +886,6 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             lock.title = editorState.locked ? 'Editar la posición y el tamaño de las tarjetas' : 'Fijar diseño y ocultar los tiradores';
             document.getElementById('layout-lock-icon').textContent = editorState.locked ? '🔒' : '🔓';
             document.getElementById('layout-lock-label').textContent = editorState.locked ? 'Editar diseño' : 'Fijar diseño';
-            document.getElementById('layout-help').textContent = editorState.locked
-                ? 'Diseño fijo. Pulsa «Editar diseño» para mover o redimensionar las tarjetas.'
-                : 'Selecciona una tarjeta y arrastra sus tiradores. Mueve desde el encabezado; suelta sobre otra para intercambiar lugares.';
             document.getElementById('undo-layout-btn').disabled = editorState.locked || !(undoHistory.get(currentProfile)?.length);
             document.getElementById('reset-layout-btn').disabled = editorState.locked;
             for (const [id, card] of Object.entries(cardElements)) card.classList.toggle('is-selected', !editorState.locked && selectedCard === id && !card.hidden);
@@ -981,16 +987,86 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             if (x !== null) gx.style.left = `${x}px`;
             if (y !== null) gy.style.top = `${y}px`;
         }
-        // Encuentra el primer contacto durante todo el recorrido del borde, incluso en diagonal.
-        function preventResizeOverlap(origin, candidate, others) {
+        function cardMinimum(id, rect, axis) {
+            const nominal = axis === 'x' ? (id === 'timer' ? 210 : id === 'data' ? 240 : 180) : (id === 'data' ? 160 : 105);
+            return Math.min(rect[axis === 'x' ? 'w' : 'h'], nominal);
+        }
+        // Un borde puede estar unido a varios vecinos: por ejemplo, indicaciones bajo reloj e imagen.
+        function connectedEdges(rectangles, id, side, size) {
+            const axis = ['e','w'].includes(side) ? 'x' : 'y';
+            const length = axis === 'x' ? 'w' : 'h', cross = axis === 'x' ? 'y' : 'x', crossLength = axis === 'x' ? 'h' : 'w';
+            const opposite = { e: 'w', w: 'e', n: 's', s: 'n' };
+            const tolerance = Math.max(24, Math.min(48, Math.min(size.w, size.h) * 0.04));
+            const result = [{ id, side }], seen = new Set([`${id}:${side}`]);
+            let shared = false;
+            for (let i = 0; i < result.length; i++) {
+                const node = result[i], rect = rectangles[node.id], forward = ['e','s'].includes(node.side);
+                for (const [otherId, other] of Object.entries(rectangles)) {
+                    if (otherId === node.id) continue;
+                    const gap = forward ? other[axis] - rect[axis] - rect[length] : rect[axis] - other[axis] - other[length];
+                    const sharedSpan = Math.min(rect[cross] + rect[crossLength], other[cross] + other[crossLength]) - Math.max(rect[cross], other[cross]);
+                    const key = `${otherId}:${opposite[node.side]}`;
+                    if (gap >= -0.05 && gap <= tolerance && sharedSpan > 0.5 && !seen.has(key)) {
+                        shared = true;
+                        seen.add(key);
+                        result.push({ id: otherId, side: opposite[node.side] });
+                    }
+                }
+                // Continúa el mismo divisor a través de una unión de cuatro tarjetas.
+                if (shared) for (const [otherId, other] of Object.entries(rectangles)) {
+                    const key = `${otherId}:${node.side}`;
+                    if (seen.has(key)) continue;
+                    const edge = rect[axis] + (forward ? rect[length] : 0);
+                    const otherEdge = other[axis] + (forward ? other[length] : 0);
+                    const separation = Math.max(rect[cross], other[cross]) - Math.min(rect[cross] + rect[crossLength], other[cross] + other[crossLength]);
+                    if (Math.abs(edge - otherEdge) <= 0.75 && separation <= tolerance) {
+                        seen.add(key);
+                        result.push({ id: otherId, side: node.side });
+                    }
+                }
+            }
+            return result;
+        }
+        function moveSharedEdge(origins, candidates, id, side, delta, size, disableSnap) {
+            const axis = ['e','w'].includes(side) ? 'x' : 'y', length = axis === 'x' ? 'w' : 'h';
+            const startSide = axis === 'x' ? 'w' : 'n', endSide = axis === 'x' ? 'e' : 's';
+            const group = connectedEdges(origins, id, side, size), flags = new Map();
+            for (const node of group) {
+                if (!flags.has(node.id)) flags.set(node.id, { start: 0, end: 0 });
+                flags.get(node.id)[node.side === startSide ? 'start' : 'end'] = 1;
+            }
+            let minimum = -Infinity, maximum = Infinity;
+            for (const [otherId, edges] of flags) {
+                const rect = origins[otherId], change = edges.end - edges.start;
+                if (edges.start) minimum = Math.max(minimum, -rect[axis]);
+                if (edges.end) maximum = Math.min(maximum, size[length] - rect[axis] - rect[length]);
+                const room = rect[length] - cardMinimum(otherId, rect, axis);
+                if (change > 0) minimum = Math.max(minimum, -room);
+                if (change < 0) maximum = Math.min(maximum, room);
+            }
+            delta = clamp(delta, minimum, maximum);
+            const edge = origins[id][axis] + (side === endSide ? origins[id][length] : 0);
+            const fixed = Object.entries(origins).filter(([otherId]) => !flags.has(otherId)).map(([otherId, rect]) => ({ id: otherId, ...rect }));
+            const snap = disableSnap ? null : closestGuide([edge + delta], guideTargets(fixed, size, axis));
+            if (snap) delta = clamp(delta + snap.delta, minimum, maximum);
+            for (const [otherId, edges] of flags) {
+                candidates[otherId][axis] = origins[otherId][axis] + edges.start * delta;
+                candidates[otherId][length] = origins[otherId][length] + (edges.end - edges.start) * delta;
+            }
+            return snap?.target ?? null;
+        }
+        // Comprueba todo el recorrido de todas las tarjetas, también cuando se mueve una esquina.
+        function preventLayoutOverlap(origins, candidates) {
             let fraction = 1;
-            for (const other of others) {
-                const gap = overlaps(origin, other, 2) ? 0 : 2;
+            const ids = Object.keys(origins);
+            for (let i = 0; i < ids.length; i++) for (let j = i + 1; j < ids.length; j++) {
+                const a = origins[ids[i]], b = origins[ids[j]], nextA = candidates[ids[i]], nextB = candidates[ids[j]];
+                const gap = overlaps(a, b, 2) ? 0 : 2;
                 const tests = [
-                    [origin.x + origin.w - other.x + gap, candidate.x + candidate.w - origin.x - origin.w],
-                    [other.x + other.w + gap - origin.x, origin.x - candidate.x],
-                    [origin.y + origin.h - other.y + gap, candidate.y + candidate.h - origin.y - origin.h],
-                    [other.y + other.h + gap - origin.y, origin.y - candidate.y]
+                    [a.x + a.w - b.x + gap, nextA.x + nextA.w - nextB.x - a.x - a.w + b.x],
+                    [b.x + b.w - a.x + gap, nextB.x + nextB.w - nextA.x - b.x - b.w + a.x],
+                    [a.y + a.h - b.y + gap, nextA.y + nextA.h - nextB.y - a.y - a.h + b.y],
+                    [b.y + b.h - a.y + gap, nextB.y + nextB.h - nextA.y - b.y - b.h + a.y]
                 ];
                 let enter = 0, leave = 1, possible = true;
                 for (const [offset, delta] of tests) {
@@ -1000,28 +1076,23 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
                 }
                 if (possible && enter < leave && leave > 0 && enter < 1) fraction = Math.min(fraction, Math.max(0, enter - 0.0001));
             }
-            return Object.fromEntries(['x','y','w','h'].map(k => [k, origin[k] + (candidate[k] - origin[k]) * fraction]));
+            return Object.fromEntries(ids.map(id => [id, Object.fromEntries(['x','y','w','h'].map(k => [k, origins[id][k] + (candidates[id][k] - origins[id][k]) * fraction]))]));
         }
-        function resizeRect(origin, direction, dx, dy, others, size, id, disableSnap = false) {
-            const minWidth = Math.min(origin.w, id === 'timer' ? 210 : id === 'data' ? 240 : 180);
-            const minHeight = Math.min(origin.h, id === 'data' ? 160 : 105);
-            let left = origin.x, right = origin.x + origin.w, top = origin.y, bottom = origin.y + origin.h;
-            if (direction.includes('w')) left = clamp(left + dx, 0, right - minWidth);
-            if (direction.includes('e')) right = clamp(right + dx, left + minWidth, size.w);
-            if (direction.includes('n')) top = clamp(top + dy, 0, bottom - minHeight);
-            if (direction.includes('s')) bottom = clamp(bottom + dy, top + minHeight, size.h);
-            let gx = null, gy = null;
-            if (!disableSnap) {
-                const xEdge = direction.includes('w') ? left : direction.includes('e') ? right : null;
-                const yEdge = direction.includes('n') ? top : direction.includes('s') ? bottom : null;
-                gx = xEdge === null ? null : closestGuide([xEdge], guideTargets(others, size, 'x'));
-                gy = yEdge === null ? null : closestGuide([yEdge], guideTargets(others, size, 'y'));
-                if (gx) { if (direction.includes('w')) left = clamp(left + gx.delta, 0, right - minWidth); else right = clamp(right + gx.delta, left + minWidth, size.w); }
-                if (gy) { if (direction.includes('n')) top = clamp(top + gy.delta, 0, bottom - minHeight); else bottom = clamp(bottom + gy.delta, top + minHeight, size.h); }
-            }
-            const rect = preventResizeOverlap(origin, { x: left, y: top, w: right - left, h: bottom - top }, others);
+        function resizeLayout(layout, id, direction, dx, dy, size, disableSnap = false) {
+            const origins = Object.fromEntries(Object.entries(layout).map(([key, rect]) => [key, pixelRect(rect, size)]));
+            const candidates = copy(origins);
+            const sideX = direction.includes('w') ? 'w' : direction.includes('e') ? 'e' : null;
+            const sideY = direction.includes('n') ? 'n' : direction.includes('s') ? 's' : null;
+            const gx = sideX ? moveSharedEdge(origins, candidates, id, sideX, dx, size, disableSnap) : null;
+            const gy = sideY ? moveSharedEdge(origins, candidates, id, sideY, dy, size, disableSnap) : null;
+            const resolved = preventLayoutOverlap(origins, candidates), rect = resolved[id];
             const actualX = direction.includes('w') ? rect.x : rect.x + rect.w, actualY = direction.includes('n') ? rect.y : rect.y + rect.h;
-            return { rect, x: gx && Math.abs(actualX - gx.target) < 1 ? gx.target : null, y: gy && Math.abs(actualY - gy.target) < 1 ? gy.target : null };
+            return {
+                rect,
+                layout: Object.fromEntries(Object.entries(resolved).map(([key, r]) => [key, relativeRect(r, size)])),
+                x: gx !== null && Math.abs(actualX - gx) < 1 ? gx : null,
+                y: gy !== null && Math.abs(actualY - gy) < 1 ? gy : null
+            };
         }
         function swapTarget(rect, others, point) {
             let target = null, score = -1;
@@ -1067,8 +1138,9 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             const others = otherRectangles(state.id, state.before.layout, state.size);
             const result = state.type === 'move'
                 ? snapMove(containRect({ ...state.origin, x: state.origin.x + dx, y: state.origin.y + dy }, state.size), others, state.size, event.altKey)
-                : resizeRect(state.origin, state.direction, dx, dy, others, state.size, state.id, event.altKey);
-            currentLayout[state.id] = relativeRect(result.rect, state.size);
+                : resizeLayout(state.before.layout, state.id, state.direction, dx, dy, state.size, event.altKey);
+            if (state.type === 'resize') currentLayout = result.layout;
+            else currentLayout[state.id] = relativeRect(result.rect, state.size);
             if (state.type === 'move') {
                 const bounds = board.getBoundingClientRect();
                 state.target = swapTarget(result.rect, others, { x: event.clientX - bounds.left, y: event.clientY - bounds.top });
@@ -1142,13 +1214,15 @@ Usar lapicero. Las respuestas escritas con lápiz o lapicero borrable no tienen 
             event.preventDefault(); selectCard(id);
             const size = boardSize(), origin = pixelRect(currentLayout[id], size), others = otherRectangles(id);
             const step = event.shiftKey ? 1 : 10, dx = event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0, dy = event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0;
-            const rect = button.classList.contains('resize-handle')
-                ? resizeRect(origin, button.dataset.direction, dx, dy, others, size, id, true).rect
-                : containRect({ ...origin, x: origin.x + dx, y: origin.y + dy }, size);
-            if (others.some(other => overlaps(rect, other))) return;
-            const next = relativeRect(rect, size);
-            if (JSON.stringify(next) === JSON.stringify(currentLayout[id])) return;
-            remember(snapshot()); currentLayout[id] = next; renderLayout(); saveDesign();
+            let next;
+            if (button.classList.contains('resize-handle')) next = resizeLayout(currentLayout, id, button.dataset.direction, dx, dy, size, true).layout;
+            else {
+                const rect = containRect({ ...origin, x: origin.x + dx, y: origin.y + dy }, size);
+                if (others.some(other => overlaps(rect, other))) return;
+                next = { ...currentLayout, [id]: relativeRect(rect, size) };
+            }
+            if (JSON.stringify(next) === JSON.stringify(currentLayout)) return;
+            remember(snapshot()); currentLayout = next; renderLayout(); saveDesign();
         });
         window.addEventListener('resize', queueRefresh);
         if ('ResizeObserver' in window) new ResizeObserver(queueRefresh).observe(board);
